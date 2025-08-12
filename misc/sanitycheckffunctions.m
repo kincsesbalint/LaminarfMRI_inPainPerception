@@ -1,0 +1,23 @@
+allsubj={7361, 7375, 7376,...
+         7383, 7402, 7403, 7404,...
+         7405, 7408, 7414, 7415,...
+         7425, 7426, 7433, 7434,...
+         7435, 7443, 7444, 7445,...
+         7448, 7449, 7452, 7453,...
+         7454, 7455, 7456, 7457,...
+         7468, 7469, 7482, 7484, 7485};
+for subid=allsubj%{7484}
+%     BK_layer_sampling_pain_study_pipeline(subj)
+    if ~ischar(subid)
+        subid = char(string(subid));
+    end
+    roipath='C:\Users\lenov\Documents\layerfMRI_DATA\groupavg_correctBET\';
+    outputpath=[roipath subid '\functionalmasks\'];
+    load([outputpath 'interimdata_rwls.mat'],'interimdata_columns')
+    columnspecificts=interimdata_columns.columnspecificts;
+    sz=size(columnspecificts);
+    if sz(3)~=1221
+        warning(['The ts is shorter!!! why?' subid])
+    end
+    layeractivation=interimdata_columns.layeractivation;
+end

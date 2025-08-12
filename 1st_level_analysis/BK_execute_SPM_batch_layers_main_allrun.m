@@ -1,0 +1,187 @@
+function BK_execute_SPM_batch_layers_main_allrun(tmppath,subjpath,structpath,multi_regfile,datapath,hpfiltcutoff)
+
+
+%load the corresponding timing file. Used to fill in the onset and duration fields of the SPM batch
+for run=1:3
+    timingfilepath=[subjpath '\ses-02\func\layers\sub-*\eachcondition\' '*_run-0' num2str(run) '.csv'];
+    timing_csv = dir([timingfilepath]);
+    timing_info_file{run} = readtable([timing_csv.folder '/' timing_csv.name]);
+end
+
+%create the statistics output path
+% stats_path = [tmppath '/' typeofestimation '_' typofcompcor '_UNsmoothed'];
+% 
+% if ~(isfolder(stats_path))
+%     mkdir(stats_path)
+% end
+
+
+
+%load the data as filenames in a struct
+for run=1:3
+    tmp=dir([tmppath '/run' num2str(run) '/*_Warped-to-Anat.nii']);
+% tmp = dir([tmppath '/*_Warped-to-Anat.nii']);
+    scanfiles = cell(size(tmp));
+    for jj = 1:numel(scanfiles)
+        scanfiles(jj) = cellstr([tmp(jj).folder '/' tmp(jj).name ',1']);
+    end
+    scans{run} = scanfiles;
+end
+
+
+
+%run the SPM batch
+inputs = cell(0, 1);
+spm('defaults', 'FMRI');
+spm_jobman('run', batch_to_execute(datapath,scans,timing_info_file,structpath,multi_regfile,hpfiltcutoff), inputs{:});
+end
+
+function matlabbatch = batch_to_execute(stats_path,scans,timing_info,structpath,multi_regfile,hpfiltcutoff)
+
+%-----------------------------------------------------------------------
+% Job saved on 31-Jan-2023 12:18:03 by cfg_util (rev $Rev: 7345 $)
+% spm SPM - SPM12 (7771)
+% cfg_basicio BasicIO - Unknown
+%-----------------------------------------------------------------------
+
+% inppath = fileparts(scans{1});
+
+%     matlabbatch{1}.spm.spatial.smooth.data = 
+%     matlabbatch{1}.spm.spatial.smooth.fwhm = [4 4 4];
+%     matlabbatch{1}.spm.spatial.smooth.dtype = 0;
+%     matlabbatch{1}.spm.spatial.smooth.im = 0;
+%     matlabbatch{1}.spm.spatial.smooth.prefix = '';
+
+
+    matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.dir = {stats_path};
+    matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.timing.units = 'secs';
+    matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.timing.RT = 3;
+    matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.timing.fmri_t = 16;
+    matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.timing.fmri_t0 = 8;
+%%
+
+
+
+for run=1:3
+    trial_types = sort(unique(timing_info{run}.trial_type));
+    %the order of the trial tpyes are the following:
+%     {'anticipation_high_cognition'}
+%     {'anticipation_low_cognition' }
+%     {'pain_high_cogn_high_pain'   }
+%     {'pain_high_cogn_low_pain'    }
+%     {'pain_low_cogn_high_pain'    }
+%     {'pain_low_cogn_low_pain'     }
+%     {'rating'                     }
+    matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(run).scans = scans{run};
+    last_idx = 0;
+    for ii = 1:length(trial_types)
+        trial_type = trial_types{ii};
+        onset = [timing_info{run}.onset(strcmp(timing_info{run}.trial_type,trial_type))];
+        duration = [timing_info{run}.duration(strcmp(timing_info{run}.trial_type,trial_type))];
+    
+        matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(run).cond(ii).name = trial_type;
+        matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(run).cond(ii).onset = onset;
+        matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(run).cond(ii).duration = duration;
+        matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(run).cond(ii).tmod = 0;
+        matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(run).cond(ii).pmod = struct('name', {}, 'param', {}, 'poly', {});
+        matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(run).cond(ii).orth = 1;
+            %todo differentiati between all conditions and all block/trial here
+    %     if contains(trial_type,'pain')
+    %     
+    %         N_trials = length(onset);
+    %         idx = last_idx + 1:last_idx + N_trials;
+    %         for trial = 1:N_trials
+    %             matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(1).cond(idx(trial)).name = [trial_type '_' num2str(trial)];
+    %             matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(1).cond(idx(trial)).onset = onset(trial);
+    %             matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(1).cond(idx(trial)).duration = duration(trial);
+    %             matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(1).cond(idx(trial)).tmod = 0;
+    %             matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(1).cond(idx(trial)).pmod = struct('name', {}, 'param', {}, 'poly', {});
+    %             matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(1).cond(idx(trial)).orth = 1;
+    %         end
+    %     else
+    %         matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(1).cond(last_idx+1).name = trial_type;
+    %         matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(1).cond(last_idx+1).onset = onset;
+    %         matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(1).cond(last_idx+1).duration = duration;
+    %         matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(1).cond(last_idx+1).tmod = 0;
+    %         matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(1).cond(last_idx+1).pmod = struct('name', {}, 'param', {}, 'poly', {});
+    %         matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(1).cond(last_idx+1).orth = 1;
+    %     end
+    % 
+    % 
+    %     %matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(1).multi = {''};
+    %     %matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(1).regress = struct('name', {}, 'val', {});
+    %     last_idx = length(matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(1).cond);
+    end
+    % motion_file = dir([inppath '/*_MoCorr.txt']);
+    % if isempty(motion_file)
+    %     motion_file = dir([inppath '/*_MoCorr.txt']);
+    %     [~,motion_file_name] = fileparts(motion_file.name);
+    %     movefile([motion_file.folder '/' motion_file.name],[motion_file.folder '/' motion_file_name '.txt']);
+    % end
+    % motion_file = [motion_file.folder '/' motion_file.name];
+    
+    % multi_regfile = [cellstr(motion_file)];
+    % 
+    % if DO_COMPCOR == true
+    %     compcor_file = dir([inppath '/compcor*.txt']);
+    %     compcor_file = [compcor_file.folder '/' compcor_file.name];
+    %     multi_regfile = [multi_regfile; cellstr(compcor_file)];
+    % end
+    
+    matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(run).multi_reg = multi_regfile{run};
+    matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.sess(run).hpf = hpfiltcutoff;
+end
+matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.fact = struct('name', {}, 'levels', {});
+matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.bases.hrf.derivs = [0 0];
+matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.volt = 1;
+matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.global = 'None';
+matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.mthresh = 0;
+subjid= extractBefore(structpath,'/ses-');
+if str2double(subjid(end-3:end))==7356
+    matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.mask = {[structpath '/UNI_MPRAGEised_brainmask.nii']};
+else
+    matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.mask = {[structpath '/UNI_MoCo_MPRAGEised_brainmask.nii']};
+end
+% matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.cvi = 'AR(1)'; %or None? - see Tor's recommendation in which cases.
+matlabbatch{1}.spm.tools.rwls.fmri_rwls_spec.cvi = 'wls'; %wls this is not recommended by the developers if the data is smoothed
+
+matlabbatch{2}.spm.tools.rwls.fmri_rwls_est.spmmat(1) = cfg_dep('fMRI model specification: SPM.mat File', substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
+% matlabbatch{2}.spm.tools.rwls.fmri_rwls_est.write_residuals = 0; % set to 1 to keep residuals
+matlabbatch{2}.spm.tools.rwls.fmri_rwls_est.method.Classical = 1;
+
+matlabbatch{3}.spm.stats.con.spmmat(1) = cfg_dep('rWLS Model estimation: SPM.mat File', substruct('.','val', '{}',{2}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
+matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = 'maineffectofcognition';
+matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = [0 0 1 1 -1 -1 0];
+% matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = [0 0 0.5 0.5 -0.5 -0.5 0];%never used this part 
+matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'both';
+
+matlabbatch{3}.spm.stats.con.consess{2}.tcon.name = 'maineffectofpain';
+matlabbatch{3}.spm.stats.con.consess{2}.tcon.weights = [0 0 1 -1 1 -1 0];
+% matlabbatch{3}.spm.stats.con.consess{2}.tcon.weights = [0 0 0.5 -0.5 0.5 -0.5 0];%never used this part 
+matlabbatch{3}.spm.stats.con.consess{2}.tcon.sessrep = 'both';
+
+matlabbatch{3}.spm.stats.con.consess{3}.tcon.name = 'interactioneffect';
+% matlabbatch{3}.spm.stats.con.consess{3}.tcon.weights = [0 0 1 -1 -1 1 0]; %this was defined in the previous run with hpfilter=400sec
+matlabbatch{3}.spm.stats.con.consess{3}.tcon.weights = [0 0 -1 1 1 -1 0]; %this would mean a similar direction as in the behavior, that is the positive value would mean higher cognitive effect in the high pain condition
+% matlabbatch{3}.spm.stats.con.consess{3}.tcon.weights = [0 0 0.5 -0.5 -0.5 0.5 0]; %never used this part 
+matlabbatch{3}.spm.stats.con.consess{3}.tcon.sessrep = 'both';
+
+% matlabbatch{3}.spm.stats.con.consess{4}.tcon.name = 'maineffectofcognition_lcminhc';
+% matlabbatch{3}.spm.stats.con.consess{4}.tcon.weights = [0 0 -1 -1 1 1 0];
+% % matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = [0 0 0.5 0.5 -0.5 -0.5 0];%never used this part 
+% matlabbatch{3}.spm.stats.con.consess{4}.tcon.sessrep = 'both';
+    %the order of the trial tpyes are the following:
+%     {'anticipation_high_cognition'}
+%     {'anticipation_low_cognition' }
+%     {'pain_high_cogn_high_pain'   }
+%     {'pain_high_cogn_low_pain'    }
+%     {'pain_low_cogn_high_pain'    }
+%     {'pain_low_cogn_low_pain'     }
+%     {'rating'                     }
+matlabbatch{3}.spm.stats.con.delete = 0;
+
+% matlabbatch{4}.spm.tools.rwls.fmri_rwls_plotres.spmmat_plot = {'rWLS Model estimation: SPM.mat File', substruct('.','val', '{}',{2}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat')};
+% matlabbatch{4}.spm.tools.rwls.fmri_rwls_plotres.plot_subset = [];
+% matlabbatch{4}.spm.tools.rwls.fmri_rwls_plotres.movparam = {multi_regfile};
+
+end
