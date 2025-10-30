@@ -1,15 +1,12 @@
-function BK_ROI_creation_GROUPLVLactivationconj(subid,subpath,fspath,T1path,visualizationtype,region,sampledimgtype)
-% This function is called by the BK_layer_sampling_pain_study_pipeline
-% function. The aim of this function to produce interimdata (which contains e.g.: columnar and layer level timeseires) from the
-% selected region of interest and save that in the individual folder. That
-% file can be later used to fit first level GLM on the layer timeseries.
-% This is a adaptation of VPF's similarly called function (VPF__layer_sampling_pain_study).
-% VPF__layer_sampling_pain_study: "Function to sample layers within predefined regions (see VPF_ROI_creation.m). 
-% It loads freesurfer surfaces, transforms ROI volumetric .nii to surfaces 
-% and samples layers of images saved in folders with 'run' in their name"
+function BK_smoothedindividualROI_creation(subid,region)
+% This function is called by its own. This is a modification of BK_ROI_creation_GROUPLVLactivationconj function.
+% This function aim to convert to surface space the individual smoothed
+% ROIs and then load it in the matlab space. It should return for each ROI
+% an index number that reflect the columns which need to be selected from
+% the already sampled matrices. Therefore, it can be later loaded by the
+% fitting procedure to and restrict the averaging across those columns. 
 % 
-% 
-% 
+% TODO the rest from here 
 % The following steps are implemented here:
 %   1. load boundaries to matlab which coming from freesurfer to the matrix layer_boundaries [vertex,[x,y,z],[white,pial]] : 3D matrix of the surfaces(VPF_load_layer_boundaries)
 %   (checked: does what I thought it does)
@@ -34,45 +31,54 @@ function BK_ROI_creation_GROUPLVLactivationconj(subid,subpath,fspath,T1path,visu
 % sampledimg
 %OUTPUTs: a saved file in the indiviudal local folder (hardcoded, see
 %below)
-% interimdata_columns [1x3cell array] : 
-%           columnspecificts {N_ROIx1} [N_columns N_totalvol]: for each side (always left - right, otherwise the script would inform) the timesseries
-%               of the deeper 75% of all vertices from the mask.
-%           layeractivation {N_ROI x1} [N_columns N_layers N_totalvol]: for each side, the
-%           timeseries of all layers of all vertices from the mask.
-%           allroicolumnsize {N_ROI} the "columnar thickness" for all the
-%           vertices in the mask. It is in mm!
-% The output is the input of the BK_firslvlanalysis fucntion.
+% EXAMPLE CALL:
+% for subj={7349}; BK_smoothedindividualROI_creation(subj,'S1'); end
 %
 % Balint Kincses
 % 12.2024
-    if ~ischar(subid)
-        subid = char(string(subid));
-    end
-    %hardcode the number of layers what we use for interpolation
-    N_layers = 20;
+
+fspath = 'E:\pain_layers\main_project\derivatives\freesurfer\';
+
+if subid{1} <= 7405
+    subpath = 'E:/pain_layers/main_project/derivatives/pipeline/';
+else
+    subpath = 'D:/main_project/derivatives/pipeline/';
+end
+if subid{1}==7356
+    T1path = [subpath num2str(subid{1}) '' ...
+        '\ses-01\anat\presurf_MPRAGEise\presurf_UNI\UNI_MPRAGEised_biascorrected.nii'];                  
+else
+    T1path = [subpath num2str(subid{1}) '' ...
+          '\ses-01\anat\presurf_MPRAGEise\presurf_UNI\UNI_MoCo_MPRAGEised_biascorrected.nii'];
+end
+
+if ~ischar(subid)
+    subid = char(string(subid));
+end
+%hardcode the number of layers what we use for interpolation
+N_layers = 20;
     
-    %local folder where individual folders are located
-    roipath='C:\Users\lenov\Documents\layerfMRI_DATA\groupavg_correctBET\';
-    % the output of this function can be saved.
-    outputpath=[roipath subid '\functionalmasks\'];
-    sampledfilenm=[outputpath 'interimdata_rwls_' region sampledimgtype '.mat'];
+%local folder where individual subject folders are located
+roipath='C:\Users\lenov\Documents\layerfMRI_DATA\groupavg_correctBET\';
+% the output of this function can be saved.
+outputpath=[roipath subid '\smootheddata\'];
+%     sampledfilenm=[outputpath 'interimdata_rwls_' region sampledimgtype '.mat'];
     %check if the output is already exist. If so, and no visualization is
     %set, tehn it will exit:
-    if ~exist(sampledfilenm ,'file')
-        BK_displaytxt('The interim file does NOT exist, so we create one!')
-    end
+%     if ~exist(sampledfilenm ,'file')
+%         BK_displaytxt('The interim file does NOT exist, so we create one!')
+%     end
         %load boundaries coming from freesurfer
-        layer_boundaries = VPF_load_layer_boundaries(subid,fspath);
+layer_boundaries = VPF_load_layer_boundaries(subid,fspath);
         
-        %load ROIs 
-        try
-            ROIs = BK_convert_load_ROIs(subid,roipath,fspath,size(layer_boundaries,1),region);
-        catch ME
-            
-            BK_displaytxt('Set correctly the mask! maybe only unzipping is necessary?')
+%load ROIs 
+try
+    ROIs = BK_convert_load_ROIs(subid,roipath,fspath,size(layer_boundaries,1),region);
+catch ME            
+    BK_displaytxt('Set correctly the mask! maybe only unzipping is necessary?')
 %             throw(ME)
-            return
-        end
+    return
+end
         fprintf('Size of different ROIs:%i\n', [sum(ROIs,1)])
         % Transform boundaries to matlab space (from freesurfer space), the resulting space will be in "voxel coordinate".
         %this is crucial step and need to be checked thouroughly. the
@@ -80,39 +86,39 @@ function BK_ROI_creation_GROUPLVLactivationconj(subid,subpath,fspath,T1path,visu
         [layer_boundaries,T1_mat,old_layer_boudnaries] = VPF_transform_layers_to_matlab_space(layer_boundaries,T1path);
 
         %this would be the visualization of the 
-        if strcmp(visualizationtype,'no') || strcmp(visualizationtype,'ROI')
-            if strcmp(visualizationtype,'no')
-                BK_displaytxt('No visualization of the ROI was selected but we DO the sampling.')
-            elseif strcmp(visualizationtype,'ROI')
+%         if strcmp(visualizationtype,'no') || strcmp(visualizationtype,'ROI')
+%             if strcmp(visualizationtype,'no')
+%                 BK_displaytxt('No visualization of the ROI was selected but we DO the sampling.')
+%             elseif strcmp(visualizationtype,'ROI')
                  BK_displaytxt('Visualization of the ROI + sampling')
                  BK_plotROIverticesinmatlabspace(T1path,ROIs,layer_boundaries,region,outputpath)
-            end
+%             end
             fprintf(sprintf('Starting layer sampling...\n'));
-            %sample layers
-            tic
-            fprintf('time for layer sampling:')
-            if strcmp(sampledimgtype,'derived')
-                disp("We sample the derived images!?")
-                %todo: this was not refactored as I do not use eventually
-                %this approach:
-
-                [columnspecificts,layeractivation,allroicolumnsize,sampled_img_list]= BK_select_active_columns_basedontmap(subid,subpath,layer_boundaries,ROIs,N_layers, T1_mat);
-                interimdata_columns ={columnspecificts,layeractivation,allroicolumnsize,sampled_img_list};
-            elseif strcmp(sampledimgtype,'raw')
-                disp("PLUGIN the external HD!! we go with raw data sampling!!")
-                [columnspecificts,layeractivation,allroicolumnsize]= BK_select_active_columns_basedonts(subid,subpath,layer_boundaries,ROIs,N_layers, T1_mat,old_layer_boudnaries);
-                interimdata_columns ={columnspecificts,layeractivation,allroicolumnsize};
-            end
-            
-            save(sampledfilenm,'interimdata_columns','-v7.3');
-            fprintf('Total time with sampling and saving:')
-            toc
-        elseif strcmp(visualizationtype,'onlyROI')
-            BK_displaytxt('Only visualization of the ROI was selected !!NO sampling!!')
-            BK_plotROIverticesinmatlabspace(T1path,ROIs,layer_boundaries,region,outputpath)
-        elseif strcmp(visualizationtype,'sampledROI')
-            BK_displaytxt('This is invalid with the argument sample! Try with the glmestimate argument.')
-        end
+%             %sample layers
+%             tic
+% %             fprintf('time for layer sampling:')
+% %             if strcmp(sampledimgtype,'derived')
+% %                 disp("We sample the derived images!?")
+% %                 %todo: this was not refactored as I do not use eventually
+% %                 %this approach:
+% % 
+% %                 [columnspecificts,layeractivation,allroicolumnsize,sampled_img_list]= BK_select_active_columns_basedontmap(subid,subpath,layer_boundaries,ROIs,N_layers, T1_mat);
+% %                 interimdata_columns ={columnspecificts,layeractivation,allroicolumnsize,sampled_img_list};
+% %             elseif strcmp(sampledimgtype,'raw')
+% %                 disp("PLUGIN the external HD!! we go with raw data sampling!!")
+% %                 [columnspecificts,layeractivation,allroicolumnsize]= BK_select_active_columns_basedonts(subid,subpath,layer_boundaries,ROIs,N_layers, T1_mat,old_layer_boudnaries);
+% %                 interimdata_columns ={columnspecificts,layeractivation,allroicolumnsize};
+% %             end
+% %             
+% %             save(sampledfilenm,'interimdata_columns','-v7.3');
+% %             fprintf('Total time with sampling and saving:')
+% %             toc
+% %         elseif strcmp(visualizationtype,'onlyROI')
+% %             BK_displaytxt('Only visualization of the ROI was selected !!NO sampling!!')
+% %             BK_plotROIverticesinmatlabspace(T1path,ROIs,layer_boundaries,region,outputpath)
+% %         elseif strcmp(visualizationtype,'sampledROI')
+% %             BK_displaytxt('This is invalid with the argument sample! Try with the glmestimate argument.')
+%         end
 end
 
 %% load layers function (checked -keep it)
@@ -179,7 +185,7 @@ function ROIs = BK_convert_load_ROIs(subid,roipath,fspath,N_vertex,region)
     
 
     
-    localizer = dir(fullfile([roipath subid '\functionalmasks\'], '**',['roi_' region '*.nii']));
+    localizer = dir(fullfile([roipath subid '\smootheddata\'], '**',['roi_' region '*thr0.nii']));
     %I assume here that the first localizer is always the left
     %one(alphabetic order), double check and trow an error if not
     idxtostart=strfind(localizer(1).name,region)+length(region);

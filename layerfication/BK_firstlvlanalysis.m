@@ -56,7 +56,15 @@ function [columnwisestat,layerwisestat,columndistribution] = BK_firstlvlanalysis
     outputpath=[roipath subid '\functionalmasks\'];
     % load the data
     load([outputpath 'interimdata_rwls_' region 'raw.mat'],'interimdata_columns')
+    %%this works with the averaged deep layer activation. it can be changed
+    %%to prvoide information about the whole column (averaged within the
+    %%column)
+    %%original
     columnspecificts=interimdata_columns{1};
+    %%modifed to work with the whole columns:
+%     for ikj=1:2 %side
+%         columnspecificts{ikj,1}=squeeze(mean(interimdata_columns{2}{ikj},2));
+%     end
     sz=size(columnspecificts{1,1});
     if sz(2)<1221
         warning('The ts is SHORTER!!! why?')
@@ -120,9 +128,9 @@ function [columnwisestat,layerwisestat,columndistribution] = BK_firstlvlanalysis
                 numberofactcolumnsbasedonconj(thrsidx)=sum(columnwisestat(ROI).T(:,3)>tthrs);
                 activevoxelsid{ROI}=find((columnwisestat(ROI).T(:,3)>tthrs));
                 disp(['Subject:' subid 'The number of columns within the funcitonal mask: ',num2str(numberofcolumnsinmask)])
-                disp(['Subject:' subid 'The number of columns acitvating in each run(t>', num2str(tthrs), ') for cognition: ',num2str(numberofcognactivcolumn(thrsidx))])
-                disp(['Subject:' subid 'The number of columns acitvating in each run(t>', num2str(tthrs), ') for pain: ',num2str(numberofpainactivecolumns(thrsidx))])
-                disp(['Subject:' subid 'The number of columns acitvating in each run(t>', num2str(tthrs), ') for cognition AND pain: ',num2str(numberofactcolumnsbasedonconj(thrsidx))])
+                disp(['Subject:' subid 'The percent/number of columns acitvating in each run(t>', num2str(tthrs), ') for cognition: ',num2str(round(numberofcognactivcolumn(thrsidx)/numberofcolumnsinmask*100)),'%/', num2str(numberofcognactivcolumn(thrsidx))])
+                disp(['Subject:' subid 'The percent/number of columns acitvating in each run(t>', num2str(tthrs), ') for pain: ',num2str(round(numberofpainactivecolumns(thrsidx)/numberofcolumnsinmask*100)),'%/',num2str(numberofpainactivecolumns(thrsidx))])
+                disp(['Subject:' subid 'The percent/number of columns acitvating in each run(t>', num2str(tthrs), ') for cognition AND pain: ',num2str(round(numberofactcolumnsbasedonconj(thrsidx)/numberofcolumnsinmask*100)),'%/',num2str(numberofactcolumnsbasedonconj(thrsidx))])
                 disp('-------------------------------------------------------------')
             end
             
@@ -132,8 +140,10 @@ function [columnwisestat,layerwisestat,columndistribution] = BK_firstlvlanalysis
                                         'numberofcolumnsinmask',numberofcolumnsinmask);
             %original, select the top 200 columns,so the most signficant voxel
             %pairs are included        
-            topcolumnnumber=200; %200 or 100? I think the most important would be that, in most of the participant this 200 vertices are sampled (see below for checking if any of the conjunction is below 0, if so only the positives are estimated)
-           
+%             topcolumnnumber=200; %200 or 100? I think the most important would be that, in most of the participant this 200 vertices are sampled (see below for checking if any of the conjunction is below 0, if so only the positives are estimated)
+           %we can add the number here to be the total mask, so only the
+           %positive values will be included
+           topcolumnnumber=numberofcolumnsinmask;
     
     
             %original, select top XX positive values
@@ -152,7 +162,9 @@ function [columnwisestat,layerwisestat,columndistribution] = BK_firstlvlanalysis
             positiveIndices = top200Indices(top200Values > 0);
             %Check if any negative values were removed
             if length(positiveIndices) < topcolumnnumber
-                warning('The top 200 values contained negative numbers. Only %d positive values are retained.', length(positiveIndices));
+                warning('The top 200 values contained negative numbers. Only %d positive values are retained in the %d ROI.', length(positiveIndices),ROI);
+%                 disp(['The top 200 values contained negative numbers. Only ' num2str(length(positiveIndices)) ...
+%                     ' positive values are retained in the ' num2str(ROI) ' ROI.']);
             end
     %%
             %select the top negative values
@@ -185,7 +197,7 @@ function [columnwisestat,layerwisestat,columndistribution] = BK_firstlvlanalysis
     %         positiveIndices = nonsignidx(randomIndices);        
     
             layerts=layeractivation{ROI,1};
-    %         activecluster{ROI,1}=positiveIndices; %this is the indices within the active cluster, so they do not represent an index in the whole surface, only in this subset
+            activecluster{ROI,1}=positiveIndices; %this is the indices within the active cluster, so they do not represent an index in the whole surface, only in this subset
     %         sz=size(layerts);
             %calculate the mean timeseries from that 200 (or less) vertices.
     %         if any(isnan(layerts(positiveIndices,:,:)),'all')
@@ -805,8 +817,8 @@ function BK_plotactiveclusterscolumn(imgpath,ROIs,activevoxelsid,layer_boundarie
                    'FontSize', 14, 'LineStyle', 'none');
         set(fig, 'Units', 'normalized', 'OuterPosition', [0 0 1 1]); 
         set(fig, 'PaperUnits', 'inches', 'PaperSize', [24, 32],'PaperPosition', [0 0 24 32]); % Match the figure size
-        print(fig, [outputpath region '_ROIclust.pdf'], '-dpdf', '-bestfit');
-        savefig(fig, [outputpath region '_ROIclust.fig']);  % Save as .fig
+        print(fig, [outputpath region '_ROIclust_forallposvertex.pdf'], '-dpdf', '-bestfit');
+        savefig(fig, [outputpath region '_ROIclust_forallposvertex.fig']);  % Save as .fig
         close(fig);
 
 end
