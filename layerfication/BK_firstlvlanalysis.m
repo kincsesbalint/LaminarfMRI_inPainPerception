@@ -79,12 +79,14 @@ function [columnwisestat,layerwisestat,columndistribution] = BK_firstlvlanalysis
             layerts=layeractivation{ROI,1};
             layerts_significant=mean(layerts(:,:,:),1); %,'omitnan'
             layerts_significant=squeeze(layerts_significant);
-            [T,Tcrit,beta,pmax] = BK_layer_analysis_stats(layerts_significant,subid,subpath,region,'maineff+conditions'); %it always spits out the conditions in themself.
+            [T,Tcrit,beta,pmax,percentsignalchange] = BK_layer_analysis_stats(layerts_significant,subid,subpath,region,'maineff+conditions'); %it always spits out the conditions in themself.
             columndistribution{ROI}=[];
             columnwisestat=[];
             layerwisestat{ROI} = struct('beta',beta,'T',T,'T_crit',Tcrit,'p_max',pmax);
             
         end
+    elseif strcmp(selectedvoxels,'smoothed1thr')
+        
     else
         %fit a 1st lvl GLM on each vertices.
         [T,Tcrit,beta,pmax] = BK_column_analysis_stats(columnspecificts,subid,subpath,region,typeofcon);
@@ -140,10 +142,10 @@ function [columnwisestat,layerwisestat,columndistribution] = BK_firstlvlanalysis
                                         'numberofcolumnsinmask',numberofcolumnsinmask);
             %original, select the top 200 columns,so the most signficant voxel
             %pairs are included        
-%             topcolumnnumber=200; %200 or 100? I think the most important would be that, in most of the participant this 200 vertices are sampled (see below for checking if any of the conjunction is below 0, if so only the positives are estimated)
+            topcolumnnumber=200; %200 or 100? I think the most important would be that, in most of the participant this 200 vertices are sampled (see below for checking if any of the conjunction is below 0, if so only the positives are estimated)
            %we can add the number here to be the total mask, so only the
            %positive values will be included
-           topcolumnnumber=numberofcolumnsinmask;
+%            topcolumnnumber=numberofcolumnsinmask;
     
     
             %original, select top XX positive values
@@ -205,12 +207,26 @@ function [columnwisestat,layerwisestat,columndistribution] = BK_firstlvlanalysis
     %         end
             %average the layer level information derived from the top 200
             %column:
+            %original KEEP this:
             layerts_significant=mean(layerts(positiveIndices,:,:),1); %,'omitnan'
+            layerts_significant=squeeze(layerts_significant);
     %%
             %average across all vertexpairs
     %         layerts_significant=mean(layerts(:,:,:),1); %,'omitnan'
     %%
-            layerts_significant=squeeze(layerts_significant);
+
+    %%do some magic here and only inlcude a certain "bin" of this 200active
+    %%columns
+%     mybins=round(linspace(1,length(positiveIndices), 5));
+%     for mybin=1:4
+%         binstart=mybins(mybin);
+%         binend=mybins(mybin+1);
+%         layerts_significant=mean(layerts(positiveIndices(binstart:binend),:,:),1); %,'omitnan'
+%         layerts_significant=squeeze(layerts_significant);
+%         [T,Tcrit,beta,pmax] = BK_layer_analysis_stats(layerts_significant,subid,subpath,region,'maineff+conditions');
+%             
+%         layerwisestat{ROI,mybin} = struct('beta',beta,'T',T,'T_crit',Tcrit,'p_max',pmax);
+%     end
     %         layerts_significant_forfunc=reshape(layerts_significant,[sz(2), sz(3),sz(4)]);
 %             [T,Tcrit,beta,pmax] =BK_layer_analysis_stats(layerts_significant,subid,subpath,region,typeofcon);%this
 %             was previously the call(until 10.08.2025),and it always
@@ -218,9 +234,11 @@ function [columnwisestat,layerwisestat,columndistribution] = BK_firstlvlanalysis
 %             However, it make more sense to calculate the effect for all
 %             conditons separately, as a simple aritmetic can turn the
 %             stuff into main effect,...
-            [T,Tcrit,beta,pmax] = BK_layer_analysis_stats(layerts_significant,subid,subpath,region,'maineff+conditions');
+
+%this is the main stuf which we need to KEEP THIS
+            [T,Tcrit,beta,pmax,percentsignalchange] = BK_layer_analysis_stats(layerts_significant,subid,subpath,region,'maineff+conditions');
             
-            layerwisestat{ROI} = struct('beta',beta,'T',T,'T_crit',Tcrit,'p_max',pmax);
+            layerwisestat{ROI} = struct('beta',beta,'T',T,'T_crit',Tcrit,'p_max',pmax,'percentsignalchange',percentsignalchange);
         end
     end
     
@@ -375,14 +393,15 @@ function [T,T_crit,beta,p_max]=BK_column_analysis_stats(columnspecificts,subid,s
             [T{ROI,1}(1:columnsss(ROI),idxcontastofinterest),...
              T_crit{ROI,1}(idxcontastofinterest),...
              beta{ROI,1}(1:columnsss(ROI),idxcontastofinterest),... %this should be a cell array instead of a matrix as the number of columns iwhtin a ROI most porbably change.
-             p_max{ROI,1}(idxcontastofinterest)] = BK_Tmap_from_SPM(SPM,b,ResMS,con,0.05,'none');
+             p_max{ROI,1}(idxcontastofinterest),...
+             ~] = BK_Tmap_from_SPM(SPM,b,ResMS,con,0.05,'none','column');
        end
     end
 
 end
 
 %% Layerwise 1st lvl GLM estimation - 
-function [T,T_crit,beta,p_max]=BK_layer_analysis_stats(laminarts,subid,subpath,region,typeofcon)%subpath,ZTRANS)
+function [T,T_crit,beta,p_max,percentsignalchange]=BK_layer_analysis_stats(laminarts,subid,subpath,region,typeofcon)%subpath,ZTRANS)
 %     if nargin < 4
 %         ZTRANS = false;
 %     end
@@ -450,6 +469,8 @@ function [T,T_crit,beta,p_max]=BK_layer_analysis_stats(laminarts,subid,subpath,r
     beta = zeros(N_layer,ncontrast);
     T_crit = zeros(ncontrast,1);
     p_max = zeros(ncontrast,1);
+    %added later
+    percentsignalchange= zeros(N_layer,ncontrast);
 
 
     W = SPM.xX.W;
@@ -498,12 +519,13 @@ function [T,T_crit,beta,p_max]=BK_layer_analysis_stats(laminarts,subid,subpath,r
         [T(:,idxcontastofinterest),...
          T_crit(idxcontastofinterest),...
          beta(:,idxcontastofinterest),... %this should be a cell array instead of a matrix as the number of columns iwhtin a ROI most porbably change.
-         p_max(idxcontastofinterest)] = BK_Tmap_from_SPM(SPM,b,ResMS,con,0.05,'none');
+         p_max(idxcontastofinterest),...
+         percentsignalchange(:,idxcontastofinterest)] = BK_Tmap_from_SPM(SPM,b,ResMS,con,0.05,'none','layer');
     end
 
 end
 %% calculate columnwise t-values - not checked,but trust in VPF that the implementation is correct.
-function [T,Tcrit,con_array,pmax] = BK_Tmap_from_SPM(SPM,beta,ResMS,con,alpha,flag)
+function [T,Tcrit,con_array,pmax,percentsignal_array] = BK_Tmap_from_SPM(SPM,beta,ResMS,con,alpha,flag,typeofanalysis)
 
     if any(isnan(beta))
         warning('beta values contain NaNs! this is an issue and has to be futher investigated!')
@@ -522,6 +544,20 @@ function [T,Tcrit,con_array,pmax] = BK_Tmap_from_SPM(SPM,beta,ResMS,con,alpha,fl
     con_array     = zeros(1,size(beta,2));
     for j=1:size(beta_use,1)
         con_array = con_array + con(beta_index(j)) * beta_use(j,:);
+    end
+
+    percentsignal_array     = zeros(1,size(beta,2));
+
+    if strcmp(typeofanalysis,'column')
+        disp('Column wise stats are calculated')
+    elseif strcmp(typeofanalysis,'layer')
+        runspecificconstant=beta(end-2:end,:);
+        
+        for j=1:size(beta_use,1)
+            runspecificpercentsignal=(con(beta_index(j)) * beta_use(j,:))./runspecificconstant(j,:);
+            percentsignal_array = percentsignal_array + runspecificpercentsignal;
+        end
+        percentsignal_array=percentsignal_array/3;
     end
 %     con_array_spm=con'*beta; %might change to this as it is more stable
 %     then the implementation above

@@ -1,17 +1,22 @@
-function BK_smoothedindividualROI_creation(subid,region)
+function BK_smoothedindividualROI_creation(subid,regions)
 % This function is called by its own. This is a modification of BK_ROI_creation_GROUPLVLactivationconj function.
-% This function aim to convert to surface space the individual smoothed
-% ROIs and then load it in the matlab space. It should return for each ROI
+%
+% This function aims to convert to surface space the individual smoothed
+% ROIs volumes and then load it in the matlab space. It should return for each ROI
 % an index number that reflect the columns which need to be selected from
 % the already sampled matrices. Therefore, it can be later loaded by the
 % fitting procedure to and restrict the averaging across those columns. 
 % 
+% First, the individual volumes need to be created (see documentation for
+% more detail).
+% 
+% 
+% 
+% a
 % TODO the rest from here 
 % The following steps are implemented here:
 %   1. load boundaries to matlab which coming from freesurfer to the matrix layer_boundaries [vertex,[x,y,z],[white,pial]] : 3D matrix of the surfaces(VPF_load_layer_boundaries)
-%   (checked: does what I thought it does)
 %   2. load ROIs coming from the group average activation (BK_convert_load_ROIs)
-%   (checked: does what I thought it does)
 %   3. transform boundaries to matlab space (from freesurfer space), the
 %        resulting space will be in "voxel coordinate".
 % 
@@ -60,9 +65,12 @@ N_layers = 20;
     
 %local folder where individual subject folders are located
 roipath='C:\Users\lenov\Documents\layerfMRI_DATA\groupavg_correctBET\';
+
 % the output of this function can be saved.
 outputpath=[roipath subid '\smootheddata\'];
-%     sampledfilenm=[outputpath 'interimdata_rwls_' region sampledimgtype '.mat'];
+% smoothedmaskfilenm=[outputpath 'interimdata_smoothedmask_' region '.mat'];
+% smoothedmaskfilenm=[outputpath 'interimdata_smoothedmask.mat'];%this is with 0 threshold 
+smoothedmaskfilenm=[outputpath 'interimdata_smoothedmask_thr1.mat'];%this is with 1 threshold 
     %check if the output is already exist. If so, and no visualization is
     %set, tehn it will exit:
 %     if ~exist(sampledfilenm ,'file')
@@ -71,29 +79,72 @@ outputpath=[roipath subid '\smootheddata\'];
         %load boundaries coming from freesurfer
 layer_boundaries = VPF_load_layer_boundaries(subid,fspath);
         
+for myregion=regions
+    region=myregion{1};
+    display(region)
 %load ROIs 
+localizer_original = dir(fullfile([roipath subid '\functionalmasks\'], '**',['roi_' region '*.nii.gz']));
+% localizer_smoothed = dir(fullfile([roipath subid '\smootheddata\'], '**',['roi_' region '*thr0.nii.gz']));
+localizer_smoothed = dir(fullfile([roipath subid '\smootheddata\'], '**',['roi_' region '*thr1.nii.gz']));
+
+
 try
-    ROIs = BK_convert_load_ROIs(subid,roipath,fspath,size(layer_boundaries,1),region);
+    ROIs_smoothed = BK_convert_load_ROIs(subid,roipath,fspath,size(layer_boundaries,1),region,localizer_smoothed);
+    ROIs_original = BK_convert_load_ROIs_originalmask(subid,roipath,fspath,size(layer_boundaries,1),region,localizer_original);
 catch ME            
-    BK_displaytxt('Set correctly the mask! maybe only unzipping is necessary?')
+    BK_displaytxt('The original ROI was only loaded, while the smoothed was created! Did that really happen? check if original exist already and the smoothed has been created.')
 %             throw(ME)
     return
 end
-        fprintf('Size of different ROIs:%i\n', [sum(ROIs,1)])
+        
         % Transform boundaries to matlab space (from freesurfer space), the resulting space will be in "voxel coordinate".
         %this is crucial step and need to be checked thouroughly. the
         %sampling depends on this:!!
-        [layer_boundaries,T1_mat,old_layer_boudnaries] = VPF_transform_layers_to_matlab_space(layer_boundaries,T1path);
-
+        %%for visualization:
+%         [layer_boundaries,T1_mat,old_layer_boudnaries] = VPF_transform_layers_to_matlab_space(layer_boundaries,T1path);
+%         BK_displaytxt('Visualization of the ROI + sampling')
+%         BK_plotROIverticesinmatlabspace(T1path,ROIs_smoothed,layer_boundaries,region,outputpath)
+        %this would code the original ROIs from which we made the sampling
+        %back then:
+        for ROI=1:2
+            idxtostart=strfind(localizer_smoothed(ROI).name,region)+length(region);
+            myroiname=localizer_smoothed(ROI).name(idxtostart:idxtostart+3);
+%             ind = find(ROIs_smoothed(:,ROI));
+            intersectedwithgroupavgmask.(region).(myroiname)=ROIs_smoothed(ROIs_original(:,ROI),ROI);
+            %the original mask size can be calculate with length(intersectedwithgroupavgmask.(region).(myroiname))
+            originalmasksize=length(intersectedwithgroupavgmask.(region).(myroiname));
+            %the new mask size can be calcaulted with sum(ROIs_smoothed(:,ROI))
+            newmasksize=sum(ROIs_smoothed(:,ROI));
+            %the intersection can be calculated with sum(intersectedwithgroupavgmask.(myroiname))
+            intersectionofthetwomask=sum(intersectedwithgroupavgmask.(region).(myroiname));
+            newmasksizes.(region).(myroiname)=newmasksize;
+            fprintf('in %s ROI:\n',myroiname)
+            fprintf('The size of the original mask (group level average):%i\n', [originalmasksize])
+            fprintf('The size of the new mask (indiviudal smoothed data):%i\n', [newmasksize])
+            fprintf('The size of the intersection of the two mask :%i\n', [intersectionofthetwomask])
+            fprintf('The size of the skipped vertices from the new mask (not intersected with the original) %i and percent of those in the new mask: %.4f%%\n', [newmasksize-intersectionofthetwomask, ...
+                round((newmasksize-intersectionofthetwomask)/newmasksize*100,2)])
+            fprintf('The percentage of the original mask which is used: (100-The size of the skipped vertices from the original mask (not intersected with the new) %i and percent of those in the original mask: %.4f%%\n', [originalmasksize-intersectionofthetwomask, ...
+                100-round((originalmasksize-intersectionofthetwomask)/originalmasksize*100,2)])
+%             fprintf('The percent difference between  of the intersection of the two mask :%i\n', [sum(intersectedwithgroupavgmask.(myroiname))])
+        end
+        %we need a function to load the 
         %this would be the visualization of the 
 %         if strcmp(visualizationtype,'no') || strcmp(visualizationtype,'ROI')
 %             if strcmp(visualizationtype,'no')
 %                 BK_displaytxt('No visualization of the ROI was selected but we DO the sampling.')
 %             elseif strcmp(visualizationtype,'ROI')
-                 BK_displaytxt('Visualization of the ROI + sampling')
-                 BK_plotROIverticesinmatlabspace(T1path,ROIs,layer_boundaries,region,outputpath)
+                 
 %             end
-            fprintf(sprintf('Starting layer sampling...\n'));
+%             fprintf(sprintf('Starting layer sampling...\n'));
+end
+            interimdata_columns_smootheddata ={intersectedwithgroupavgmask,newmasksizes};
+
+% %             end
+% %             
+
+
+            save(smoothedmaskfilenm,'interimdata_columns_smootheddata','-v7.3');
 %             %sample layers
 %             tic
 % %             fprintf('time for layer sampling:')
@@ -157,7 +208,10 @@ function layer_boundaries = VPF_load_layer_boundaries(subid,fspath)
 end
 
 %% convert the ROI to surface (wb_command) - main function (checked -keep it)
-function ROIs = BK_convert_load_ROIs(subid,roipath,fspath,N_vertex,region)
+%I removed the wb_command, so we do not overwrite the original files.
+%Theoretically it does not, but just to being on the safe side...
+%the pipeline will crash if the old one does not there...
+function ROIs = BK_convert_load_ROIs_originalmask(subid,roipath,fspath,N_vertex,region,localizer)
     % This is an adaptation of VPF_convert_load_ROIs function. It converts the
     % ROIs to surfaces and loads them. As luckily it was already run by Viktor,
     % the freesurfer part can be commented out (but keep them to see the whole
@@ -185,7 +239,7 @@ function ROIs = BK_convert_load_ROIs(subid,roipath,fspath,N_vertex,region)
     
 
     
-    localizer = dir(fullfile([roipath subid '\smootheddata\'], '**',['roi_' region '*thr0.nii']));
+    
     %I assume here that the first localizer is always the left
     %one(alphabetic order), double check and trow an error if not
     idxtostart=strfind(localizer(1).name,region)+length(region);
@@ -226,17 +280,114 @@ function ROIs = BK_convert_load_ROIs(subid,roipath,fspath,N_vertex,region)
         wls_fspath=strrep(wls_fspath,'E:','/mnt/e');
         
         try %try to load to ROI surfaces
-            ROIs(:,ROI) = VPF_average_mask_and_thres(data(1:end-4));
+%             ROIs(:,ROI) = VPF_average_mask_and_thres(data(1:end-4));
+            ROIs(:,ROI) = VPF_average_mask_and_thres(data(1:end-7));
+        catch %apparently, not created yet so create them first
+%             hemis = {'lh','rh'};
+%             for hemi = 1:2
+% %                 cmd = ['wsl wb_command -volume-to-surface-mapping ' '"' wls_data '"'...
+% %                     ' "' wls_fspath '/' subid '/surf/' hemis{hemi} '.white.gii' '"'...
+% %                     ' "' wls_data(1:end-4) '_' hemis{hemi} '.shape.gii' '"'...
+% %                     ' -cubic'];
+%                 cmd = ['wsl wb_command -volume-to-surface-mapping ' '"' wls_data '"'...
+%                     ' "' wls_fspath '/' subid '/surf/' hemis{hemi} '.white.gii' '"'...
+%                     ' "' wls_data(1:end-7) '_' hemis{hemi} '.shape.gii' '"'...
+%                     ' -cubic'];
+%                 system(cmd);
+%             end
+%             ROIs(:,ROI) = VPF_average_mask_and_thres(data(1:end-4));
+            ROIs(:,ROI) = VPF_average_mask_and_thres(data(1:end-7));
+        end
+    end
+end
+
+%% convert the ROI to surface (wb_command) - main function (checked -keep it)
+function ROIs = BK_convert_load_ROIs(subid,roipath,fspath,N_vertex,region,localizer)
+    % This is an adaptation of VPF_convert_load_ROIs function. It converts the
+    % ROIs to surfaces and loads them. As luckily it was already run by Viktor,
+    % the freesurfer part can be commented out (but keep them to see the whole
+    % picture), bc the output files are available. The checkfile function test
+    % if the file is available, and output a message in case of its missing.
+    % The 
+    %INPUT:
+    %   subid [str]                : subject id
+    %   subpath [str]              : path to the derivatives folder
+    %   fspath [str]               : path to the freesurfer folder
+    %   N_vertex                   : the number of vertices comming from freesurfer
+    %   region [str]               : the ROI derived from smoothed group average and transformed back to the indiviudal space after intersecting with some anatomical mask. Usually left and right are differentiated.t
+    %
+    %OUTPUT:
+    %ROIs [N_vertex,N_ROI] : The ROI mask in loaded surface space. 
+    %                        N_roi is the number of regions provided
+    %                        as an arfument(left and right are
+    %                        concatenated, but one can provide separeate
+    %                        ROI masks, so only one hemispheres are
+    %                        processed)
+    
+    % fs_base = ['export FREESURFER_HOME=/usr/local/freesurfer/6.0.0; ' ...
+    %     'export SUBJECTS_DIR=' fspath '; '...
+    %     'source $FREESURFER_HOME/SetUpFreeSurfer.sh; '];
+    
+
+    
+    
+    %I assume here that the first localizer is always the left
+    %one(alphabetic order), double check and trow an error if not
+    idxtostart=strfind(localizer(1).name,region)+length(region);
+    if ~strcmp(localizer(1).name(idxtostart:idxtostart+3),'left')
+        BK_displaytxt('The order of ROI was not left and right! Double check what is the issue')
+    end
+    if isempty(localizer)        
+        return
+    end
+    N_total_ROIs = length(localizer);
+    %first convert freesurfer's xh.white to xh.white.gii
+    %theoretically this step is needed so wb_command then capable of using the
+    %surface data (othe solruion would be to use mri_vol2surf??) but most
+    %probably that result in different result--> as the file exist, it is good
+    %as it is.
+    %(https://www.mail-archive.com/freesurfer@nmr.mgh.harvard.edu/msg66816.html)
+    
+    %check if these files exist
+    % cmd = ['mris_convert ' '"' fspath '/' subid '/surf/lh.white" lh.white.gii'];
+    % system([fs_base cmd]);
+    BK_checkfile([fspath '\' subid '\surf\lh.white.gii'])
+    % cmd = ['mris_convert ' '"' fspath '/' subid '/surf/rh.white" rh.white.gii'];
+    % system([fs_base cmd]);
+    BK_checkfile([fspath '\' subid '\surf\rh.white.gii'])
+    
+    ROIs = zeros([N_vertex,N_total_ROIs],'logical');
+    for ROI = 1:N_total_ROIs
+        data = [localizer(ROI).folder '\' localizer(ROI).name];
+        wls_data=strrep(data, '\', '/');
+        if data(1)=='E'
+            wls_data=strrep(wls_data,'E:','/mnt/e');
+        elseif data(1)=='D'
+            wls_data=strrep(wls_data,'D:','/mnt/d');
+        elseif data(1)=='C'
+            wls_data=strrep(wls_data,'C:','/mnt/c');
+        end
+        wls_fspath=strrep(fspath, '\', '/');
+        wls_fspath=strrep(wls_fspath,'E:','/mnt/e');
+        
+        try %try to load to ROI surfaces
+%             ROIs(:,ROI) = VPF_average_mask_and_thres(data(1:end-4));
+            ROIs(:,ROI) = VPF_average_mask_and_thres(data(1:end-7));
         catch %apparently, not created yet so create them first
             hemis = {'lh','rh'};
             for hemi = 1:2
+%                 cmd = ['wsl wb_command -volume-to-surface-mapping ' '"' wls_data '"'...
+%                     ' "' wls_fspath '/' subid '/surf/' hemis{hemi} '.white.gii' '"'...
+%                     ' "' wls_data(1:end-4) '_' hemis{hemi} '.shape.gii' '"'...
+%                     ' -cubic'];
                 cmd = ['wsl wb_command -volume-to-surface-mapping ' '"' wls_data '"'...
                     ' "' wls_fspath '/' subid '/surf/' hemis{hemi} '.white.gii' '"'...
-                    ' "' wls_data(1:end-4) '_' hemis{hemi} '.shape.gii' '"'...
+                    ' "' wls_data(1:end-7) '_' hemis{hemi} '.shape.gii' '"'...
                     ' -cubic'];
                 system(cmd);
             end
-            ROIs(:,ROI) = VPF_average_mask_and_thres(data(1:end-4));
+%             ROIs(:,ROI) = VPF_average_mask_and_thres(data(1:end-4));
+            ROIs(:,ROI) = VPF_average_mask_and_thres(data(1:end-7));
         end
     end
 end
