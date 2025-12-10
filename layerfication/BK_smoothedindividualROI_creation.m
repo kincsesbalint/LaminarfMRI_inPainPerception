@@ -40,7 +40,7 @@ function BK_smoothedindividualROI_creation(subid,regions)
 % for subj={7349}; BK_smoothedindividualROI_creation(subj,'S1'); end
 %
 % Balint Kincses
-% 12.2024
+% 12.2025
 
 fspath = 'E:\pain_layers\main_project\derivatives\freesurfer\';
 

@@ -54,6 +54,8 @@ function [columnwisestat,layerwisestat,columndistribution] = BK_firstlvlanalysis
    %hardcode here the location of the imaging files.
     roipath='C:\Users\lenov\Documents\layerfMRI_DATA\groupavg_correctBET\';
     outputpath=[roipath subid '\functionalmasks\'];
+    smoothedimgpath=[roipath subid '\smootheddata\'];
+    mysidese={'left','righ'};
     % load the data
     load([outputpath 'interimdata_rwls_' region 'raw.mat'],'interimdata_columns')
     %%this works with the averaged deep layer activation. it can be changed
@@ -74,6 +76,11 @@ function [columnwisestat,layerwisestat,columndistribution] = BK_firstlvlanalysis
     
     layeractivation=interimdata_columns{2};
     columnsize=interimdata_columns{3};
+    %This condition is important, as there are multiple different options
+    %to select vertices from the already defined mask:
+    % 1. all - we select all the vertices within one indivudal.
+    % 2. smoothed1thr - we select based on indiviudal smoothed conjunction map with a threshold of 1.
+    % 3. everything else: we can adjust and select based on vertex/column-wise information. This was heavily tried with different parameters and always commented out the ones we already used.
     if strcmp(selectedvoxels,'all')
         for ROI=1:length(layeractivation)
             layerts=layeractivation{ROI,1};
@@ -86,9 +93,30 @@ function [columnwisestat,layerwisestat,columndistribution] = BK_firstlvlanalysis
             
         end
     elseif strcmp(selectedvoxels,'smoothed1thr')
-        
+        for ROI=1:length(layeractivation)
+            layerts=layeractivation{ROI,1};
+            
+            smoothedvoxels=load([smoothedimgpath 'interimdata_smoothedmask_thr1.mat'],'interimdata_columns_smootheddata');
+            voxelid=smoothedvoxels.interimdata_columns_smootheddata{1,1}.(region).(mysidese{ROI});
+            if sum(voxelid)~=0
+                layerts_significant=mean(layerts(voxelid,:,:),1); %,'omitnan'
+                layerts_significant=squeeze(layerts_significant);
+                
+                [T,Tcrit,beta,pmax,percentsignalchange] = BK_layer_analysis_stats(layerts_significant,subid,subpath,region,'maineff+conditions'); %it always spits out the conditions in themself.
+            else sum(voxelid)==0;
+                warning('The participants has no activation based on the smoothed conjunction map!')
+                T=[];
+                Tcrit=[];
+                beta=[];
+                pmax=[];
+            end
+            columndistribution{ROI}=[];
+            columnwisestat=[];
+            layerwisestat{ROI} = struct('beta',beta,'T',T,'T_crit',Tcrit,'p_max',pmax);
+            
+        end
     else
-        %fit a 1st lvl GLM on each vertices.
+        %fit a 1st lvl GLM on each vertices to define the interesting vertices.
         [T,Tcrit,beta,pmax] = BK_column_analysis_stats(columnspecificts,subid,subpath,region,typeofcon);
         if contains(typeofcon,'maineff') %maineff/maineff+conditions
             for side=1:length(T)
@@ -243,7 +271,7 @@ function [columnwisestat,layerwisestat,columndistribution] = BK_firstlvlanalysis
     end
     
     fprintf('time for laminar activation:')
-    toc
+%     toc
 
     if strcmp(visualizationtype,'sampledROI')
         fprintf('Now create an image and save it...')
@@ -907,3 +935,71 @@ end
 %             legend('white','pial');
 %             axis off;
 %         end
+%% about the  selected conditions:
+% The selected conditions reflect the ones what we are interested in. see
+% below for more detail:
+% contrast = [3, 4,5 ,6]; %condition effects. to model every condition separately
+% numberofregressors=18;
+% contrasts=[contrast;contrast+numberofregressors;contrast+(2*numberofregressors)];
+% maki(contrasts(:,1))'
+% maki(contrasts(:,2))'
+% maki(contrasts(:,3))'
+% maki(contrasts(:,4))'
+%The conditions in the design matrix:
+%     {'spm_spm:beta (0001) - Sn(1) anticipation_high_cognition*bf(1)'}
+%     {'spm_spm:beta (0002) - Sn(1) anticipation_low_cognition*bf(1)' }
+%     {'spm_spm:beta (0003) - Sn(1) pain_high_cogn_high_pain*bf(1)'   }
+%     {'spm_spm:beta (0004) - Sn(1) pain_high_cogn_low_pain*bf(1)'    }
+%     {'spm_spm:beta (0005) - Sn(1) pain_low_cogn_high_pain*bf(1)'    }
+%     {'spm_spm:beta (0006) - Sn(1) pain_low_cogn_low_pain*bf(1)'     }
+%     {'spm_spm:beta (0007) - Sn(1) rating*bf(1)'                     }
+%     {'spm_spm:beta (0008) - Sn(1) R1_1'                             }
+%     {'spm_spm:beta (0009) - Sn(1) R2_1'                             }
+%     {'spm_spm:beta (0010) - Sn(1) R3_1'                             }
+%     {'spm_spm:beta (0011) - Sn(1) R4_1'                             }
+%     {'spm_spm:beta (0012) - Sn(1) R5_1'                             }
+%     {'spm_spm:beta (0013) - Sn(1) R6_1'                             }
+%     {'spm_spm:beta (0014) - Sn(1) R1_2'                             }
+%     {'spm_spm:beta (0015) - Sn(1) R2_2'                             }
+%     {'spm_spm:beta (0016) - Sn(1) R3_2'                             }
+%     {'spm_spm:beta (0017) - Sn(1) R4_2'                             }
+%     {'spm_spm:beta (0018) - Sn(1) R5_2'                             }
+%     {'spm_spm:beta (0019) - Sn(2) anticipation_high_cognition*bf(1)'}
+%     {'spm_spm:beta (0020) - Sn(2) anticipation_low_cognition*bf(1)' }
+%     {'spm_spm:beta (0021) - Sn(2) pain_high_cogn_high_pain*bf(1)'   }
+%     {'spm_spm:beta (0022) - Sn(2) pain_high_cogn_low_pain*bf(1)'    }
+%     {'spm_spm:beta (0023) - Sn(2) pain_low_cogn_high_pain*bf(1)'    }
+%     {'spm_spm:beta (0024) - Sn(2) pain_low_cogn_low_pain*bf(1)'     }
+%     {'spm_spm:beta (0025) - Sn(2) rating*bf(1)'                     }
+%     {'spm_spm:beta (0026) - Sn(2) R1_1'                             }
+%     {'spm_spm:beta (0027) - Sn(2) R2_1'                             }
+%     {'spm_spm:beta (0028) - Sn(2) R3_1'                             }
+%     {'spm_spm:beta (0029) - Sn(2) R4_1'                             }
+%     {'spm_spm:beta (0030) - Sn(2) R5_1'                             }
+%     {'spm_spm:beta (0031) - Sn(2) R6_1'                             }
+%     {'spm_spm:beta (0032) - Sn(2) R1_2'                             }
+%     {'spm_spm:beta (0033) - Sn(2) R2_2'                             }
+%     {'spm_spm:beta (0034) - Sn(2) R3_2'                             }
+%     {'spm_spm:beta (0035) - Sn(2) R4_2'                             }
+%     {'spm_spm:beta (0036) - Sn(2) R5_2'                             }
+%     {'spm_spm:beta (0037) - Sn(3) anticipation_high_cognition*bf(1)'}
+%     {'spm_spm:beta (0038) - Sn(3) anticipation_low_cognition*bf(1)' }
+%     {'spm_spm:beta (0039) - Sn(3) pain_high_cogn_high_pain*bf(1)'   }
+%     {'spm_spm:beta (0040) - Sn(3) pain_high_cogn_low_pain*bf(1)'    }
+%     {'spm_spm:beta (0041) - Sn(3) pain_low_cogn_high_pain*bf(1)'    }
+%     {'spm_spm:beta (0042) - Sn(3) pain_low_cogn_low_pain*bf(1)'     }
+%     {'spm_spm:beta (0043) - Sn(3) rating*bf(1)'                     }
+%     {'spm_spm:beta (0044) - Sn(3) R1_1'                             }
+%     {'spm_spm:beta (0045) - Sn(3) R2_1'                             }
+%     {'spm_spm:beta (0046) - Sn(3) R3_1'                             }
+%     {'spm_spm:beta (0047) - Sn(3) R4_1'                             }
+%     {'spm_spm:beta (0048) - Sn(3) R5_1'                             }
+%     {'spm_spm:beta (0049) - Sn(3) R6_1'                             }
+%     {'spm_spm:beta (0050) - Sn(3) R1_2'                             }
+%     {'spm_spm:beta (0051) - Sn(3) R2_2'                             }
+%     {'spm_spm:beta (0052) - Sn(3) R3_2'                             }
+%     {'spm_spm:beta (0053) - Sn(3) R4_2'                             }
+%     {'spm_spm:beta (0054) - Sn(3) R5_2'                             }
+%     {'spm_spm:beta (0055) - Sn(1) constant'                         }
+%     {'spm_spm:beta (0056) - Sn(2) constant'                         }
+%     {'spm_spm:beta (0057) - Sn(3) constant'                         }

@@ -2,8 +2,38 @@ function [allsubjlayer,allprocsubjid,allsubjcoldistr] = layervalues(region,typeo
 % Run the first lvl GLM on each subject data in a specific ROI and save the ß/contrast estimates for each layer.
 %
 % ToDo: Details of the script
+% INPUTS:
+%
+% 
+% OUTPUTS:
+%   
 % example call:
+%   the typeofcon parameter is hardcoded in the BK_firstlvlanalysis for calcualtion layer dependent stat, however it controls here the selection which we based on the the vertex stat.
+%  for the layer stat, it always produces all the conditions ß value and I create the contrast
+%   estimates post hoc in R (02.12.2025)
+% see firstlvlanalysis.m, BK_layer_analysis_stats for more detail of the
+% meaning of the contrast type selection
+%
+% 
+% focus on vertices which shoe the effect of pain in each levels of
+% cognition
 % [S1_nociceptivecolumns,procesubjid,columndistr]=layervalues('S1','painlvls','visualization','no');
+%   focus on vertices with main effect (conjunction type analysis)
+% [pIns_percentsignalchange,procesubjid,columndistr]=layervalues('pIns','maineff+int','visualization','no')
+%   focus on vertices with main effect (conjunction type analysis)
+% [S2_smoothedindiviudalimgs,procesubjid,columndistr]=layervalues('S2','maineff+int','visualization','no','SELECTEDCOLUMNS','smoothed1thr',subjectids,allsubjid)
+% allsubjid={7349, 7356, 7361, 7375,...
+%          7383, 7402, 7403, 7404,...
+%          7405, 7408, 7414, 7415,...
+%          7425, 7426, 7433, 7434,...
+%          7435, 7443, 7444, 7445,...
+%          7448, 7449, 7452, 7453,...
+%          7454, 7455, 7456, 7457,...
+%          7468, 7469, 7482, 7484, 7485}
+
+% 
+% 
+% s
 % by default the function use all subjects' data, do not do visualization
 % of the indiviudal funcitonal ROI, and select only the top 200 vertex
 % pairs("columns")
