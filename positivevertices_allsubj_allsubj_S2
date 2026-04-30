@@ -1,0 +1,1419 @@
+We process in region: S2, number of subjects: 34 
+[Warning: The number of subjects >7, only the first seven is written out] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('layervalues', 'C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\1st_level_analysis\layervalues.m', 53)" style="font-weight:bold">layervalues</a> (<a href="matlab: opentoline('C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\1st_level_analysis\layervalues.m',53,0)">line 53</a>)] 
+the following subjects: 7349
+the following subjects: 7356
+the following subjects: 7361
+the following subjects: 7375
+the following subjects: 7376
+the following subjects: 7383
+the following subjects: 7402
+7349 subject columnar info r
+[Warning: The ts is LONGER!!! why?] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('BK_firstlvlanalysis', 'C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_firstlvlanalysis.m', 72)" style="font-weight:bold">BK_firstlvlanalysis</a> (<a href="matlab: opentoline('C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_firstlvlanalysis.m',72,0)">line 72</a>)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('BK_layer_sampling_pain_study_pipeline', 'C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_layer_sampling_pain_study_pipeline.m', 102)" style="font-weight:bold">BK_layer_sampling_pain_study_pipeline</a> (<a href="matlab: opentoline('C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_layer_sampling_pain_study_pipeline.m',102,0)">line 102</a>)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('layervalues', 'C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\1st_level_analysis\layervalues.m', 67)" style="font-weight:bold">layervalues</a> (<a href="matlab: opentoline('C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\1st_level_analysis\layervalues.m',67,0)">line 67</a>)] 
+Subject:7349The number of columns within the funcitonal mask: 1976
+Subject:7349The percent/number of columns acitvating in each run(t>0) for cognition: 50%/989
+Subject:7349The percent/number of columns acitvating in each run(t>0) for pain: 65%/1291
+Subject:7349The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 32%/640
+-------------------------------------------------------------
+Subject:7349The number of columns within the funcitonal mask: 1976
+Subject:7349The percent/number of columns acitvating in each run(t>1) for cognition: 27%/524
+Subject:7349The percent/number of columns acitvating in each run(t>1) for pain: 32%/640
+Subject:7349The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 11%/210
+-------------------------------------------------------------
+<a href="matlab: opentoline('C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_firstlvlanalysis.m',213,1)">213 </a>            layerts_significant=squeeze(layerts_significant);
+linspace(min(x), max(x), 5)
+{Unrecognized function or variable 'x'.
+} 
+linspace(1,200, 5)
+
+ans =
+
+    1.0000   50.7500  100.5000  150.2500  200.0000
+
+round(linspace(1,200, 5))
+
+ans =
+
+     1    51   101   150   200
+
+round(linspace(1,length(positiveIndices), 5))
+
+ans =
+
+     1    51   101   150   200
+
+mybins=round(linspace(1,length(positiveIndices), 5))
+
+mybins =
+
+     1    51   101   150   200
+
+positiveIndices
+
+positiveIndices =
+
+          92
+         151
+         288
+          25
+         230
+         360
+         341
+         226
+         359
+         229
+         110
+        1810
+        1800
+         508
+          93
+         160
+         248
+         311
+         287
+         225
+         235
+         430
+         343
+         505
+          94
+         826
+         290
+         507
+        1448
+         223
+         104
+         247
+         358
+        1872
+        1303
+         292
+         112
+           9
+         509
+        1959
+         291
+         344
+         219
+         177
+           7
+        1667
+         613
+         264
+         519
+        1666
+         259
+        1858
+        1112
+         310
+         125
+        1326
+        1291
+         109
+         195
+         161
+         181
+           1
+         304
+         241
+         308
+          13
+         431
+         285
+          19
+         129
+        1111
+         442
+        1935
+        1331
+          24
+          84
+         406
+         123
+        1073
+        1750
+         232
+         886
+         224
+         170
+         245
+         293
+        1741
+         254
+        1797
+        1142
+        1110
+         823
+         218
+        1130
+         342
+         240
+         106
+         884
+         885
+         964
+        1761
+          62
+         258
+         951
+         250
+        1449
+         567
+        1425
+        1700
+        1657
+         502
+         641
+        1325
+        1168
+        1445
+         607
+        1607
+        1002
+         404
+        1655
+         158
+          16
+         503
+        1131
+         353
+        1016
+        1759
+         345
+        1170
+         952
+          54
+         111
+           8
+        1290
+         504
+        1340
+        1075
+          17
+        1940
+        1001
+         114
+        1330
+         940
+         197
+         417
+        1065
+        1809
+        1748
+        1783
+         612
+         634
+        1826
+         231
+         546
+        1550
+        1841
+        1455
+          18
+         134
+         300
+          33
+         253
+        1467
+        1264
+         706
+          12
+        1564
+        1199
+        1453
+         429
+         763
+        1237
+          10
+         337
+         164
+         972
+         602
+         340
+         256
+        1074
+        1429
+        1025
+        1875
+        1749
+         716
+        1681
+        1515
+        1160
+         350
+        1101
+        1482
+        1769
+        1951
+         518
+        1216
+         516
+         640
+        1820
+        1905
+          83
+
+positiveIndices(1:20)
+
+ans =
+
+          92
+         151
+         288
+          25
+         230
+         360
+         341
+         226
+         359
+         229
+         110
+        1810
+        1800
+         508
+          93
+         160
+         248
+         311
+         287
+         225
+
+if system_dependent('IsDebugMode')==1, dbquit all; end
+[S2_binnedcolumns,procesubjid,columndistr]=layervalues('S2','maineff+int','visualization','no')
+We process in region: S2, number of subjects: 34 
+[Warning: The number of subjects >7, only the first seven is written out] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('layervalues', 'C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\1st_level_analysis\layervalues.m', 53)" style="font-weight:bold">layervalues</a> (<a href="matlab: opentoline('C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\1st_level_analysis\layervalues.m',53,0)">line 53</a>)] 
+the following subjects: 7349
+the following subjects: 7356
+the following subjects: 7361
+the following subjects: 7375
+the following subjects: 7376
+the following subjects: 7383
+the following subjects: 7402
+7349 subject columnar info r
+[Warning: The ts is LONGER!!! why?] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('BK_firstlvlanalysis', 'C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_firstlvlanalysis.m', 72)" style="font-weight:bold">BK_firstlvlanalysis</a> (<a href="matlab: opentoline('C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_firstlvlanalysis.m',72,0)">line 72</a>)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('BK_layer_sampling_pain_study_pipeline', 'C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_layer_sampling_pain_study_pipeline.m', 102)" style="font-weight:bold">BK_layer_sampling_pain_study_pipeline</a> (<a href="matlab: opentoline('C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_layer_sampling_pain_study_pipeline.m',102,0)">line 102</a>)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('layervalues', 'C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\1st_level_analysis\layervalues.m', 67)" style="font-weight:bold">layervalues</a> (<a href="matlab: opentoline('C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\1st_level_analysis\layervalues.m',67,0)">line 67</a>)] 
+Subject:7349The number of columns within the funcitonal mask: 1976
+Subject:7349The percent/number of columns acitvating in each run(t>0) for cognition: 50%/989
+Subject:7349The percent/number of columns acitvating in each run(t>0) for pain: 65%/1291
+Subject:7349The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 32%/640
+-------------------------------------------------------------
+Subject:7349The number of columns within the funcitonal mask: 1976
+Subject:7349The percent/number of columns acitvating in each run(t>1) for cognition: 27%/524
+Subject:7349The percent/number of columns acitvating in each run(t>1) for pain: 32%/640
+Subject:7349The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 11%/210
+-------------------------------------------------------------
+<a href="matlab: opentoline('C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_firstlvlanalysis.m',227,1)">227 </a>    end
+dbcont
+dbcont
+dbcont
+dbcont
+Subject:7349The number of columns within the funcitonal mask: 4112
+Subject:7349The percent/number of columns acitvating in each run(t>0) for cognition: 43%/1765
+Subject:7349The percent/number of columns acitvating in each run(t>0) for pain: 60%/2470
+Subject:7349The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 29%/1182
+-------------------------------------------------------------
+Subject:7349The number of columns within the funcitonal mask: 4112
+Subject:7349The percent/number of columns acitvating in each run(t>1) for cognition: 22%/892
+Subject:7349The percent/number of columns acitvating in each run(t>1) for pain: 29%/1187
+Subject:7349The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 9%/368
+-------------------------------------------------------------
+dbcont
+time for laminar activation:Elapsed time is 108.099689 seconds.
+Time for one subject to process:Elapsed time is 108.230251 seconds.
+7356 subject columnar info r
+Subject:7356The number of columns within the funcitonal mask: 2425
+Subject:7356The percent/number of columns acitvating in each run(t>0) for cognition: 56%/1351
+Subject:7356The percent/number of columns acitvating in each run(t>0) for pain: 52%/1269
+Subject:7356The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 31%/749
+-------------------------------------------------------------
+Subject:7356The number of columns within the funcitonal mask: 2425
+Subject:7356The percent/number of columns acitvating in each run(t>1) for cognition: 29%/708
+Subject:7356The percent/number of columns acitvating in each run(t>1) for pain: 20%/487
+Subject:7356The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 9%/208
+-------------------------------------------------------------
+Subject:7356The number of columns within the funcitonal mask: 4685
+Subject:7356The percent/number of columns acitvating in each run(t>0) for cognition: 56%/2626
+Subject:7356The percent/number of columns acitvating in each run(t>0) for pain: 49%/2312
+Subject:7356The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 28%/1324
+-------------------------------------------------------------
+Subject:7356The number of columns within the funcitonal mask: 4685
+Subject:7356The percent/number of columns acitvating in each run(t>1) for cognition: 29%/1347
+Subject:7356The percent/number of columns acitvating in each run(t>1) for pain: 18%/840
+Subject:7356The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 6%/276
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 12.966114 seconds.
+Time for one subject to process:Elapsed time is 13.098400 seconds.
+7361 subject columnar info r
+Subject:7361The number of columns within the funcitonal mask: 2835
+Subject:7361The percent/number of columns acitvating in each run(t>0) for cognition: 51%/1449
+Subject:7361The percent/number of columns acitvating in each run(t>0) for pain: 50%/1429
+Subject:7361The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 28%/806
+-------------------------------------------------------------
+Subject:7361The number of columns within the funcitonal mask: 2835
+Subject:7361The percent/number of columns acitvating in each run(t>1) for cognition: 24%/673
+Subject:7361The percent/number of columns acitvating in each run(t>1) for pain: 21%/599
+Subject:7361The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 7%/190
+-------------------------------------------------------------
+Subject:7361The number of columns within the funcitonal mask: 3338
+Subject:7361The percent/number of columns acitvating in each run(t>0) for cognition: 53%/1777
+Subject:7361The percent/number of columns acitvating in each run(t>0) for pain: 64%/2127
+Subject:7361The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 38%/1266
+-------------------------------------------------------------
+Subject:7361The number of columns within the funcitonal mask: 3338
+Subject:7361The percent/number of columns acitvating in each run(t>1) for cognition: 24%/798
+Subject:7361The percent/number of columns acitvating in each run(t>1) for pain: 35%/1156
+Subject:7361The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 12%/404
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 10.554995 seconds.
+Time for one subject to process:Elapsed time is 10.674075 seconds.
+7375 subject columnar info r
+Subject:7375The number of columns within the funcitonal mask: 2826
+Subject:7375The percent/number of columns acitvating in each run(t>0) for cognition: 63%/1770
+Subject:7375The percent/number of columns acitvating in each run(t>0) for pain: 60%/1698
+Subject:7375The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 41%/1158
+-------------------------------------------------------------
+Subject:7375The number of columns within the funcitonal mask: 2826
+Subject:7375The percent/number of columns acitvating in each run(t>1) for cognition: 35%/999
+Subject:7375The percent/number of columns acitvating in each run(t>1) for pain: 28%/795
+Subject:7375The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 15%/414
+-------------------------------------------------------------
+Subject:7375The number of columns within the funcitonal mask: 4402
+Subject:7375The percent/number of columns acitvating in each run(t>0) for cognition: 60%/2625
+Subject:7375The percent/number of columns acitvating in each run(t>0) for pain: 66%/2912
+Subject:7375The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 42%/1862
+-------------------------------------------------------------
+Subject:7375The number of columns within the funcitonal mask: 4402
+Subject:7375The percent/number of columns acitvating in each run(t>1) for cognition: 33%/1432
+Subject:7375The percent/number of columns acitvating in each run(t>1) for pain: 36%/1594
+Subject:7375The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 16%/704
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 10.804445 seconds.
+Time for one subject to process:Elapsed time is 10.905018 seconds.
+7376 subject columnar info r
+[Warning: The ts is SHORTER!!! why?] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('BK_firstlvlanalysis', 'C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_firstlvlanalysis.m', 70)" style="font-weight:bold">BK_firstlvlanalysis</a> (<a href="matlab: opentoline('C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_firstlvlanalysis.m',70,0)">line 70</a>)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('BK_layer_sampling_pain_study_pipeline', 'C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_layer_sampling_pain_study_pipeline.m', 102)" style="font-weight:bold">BK_layer_sampling_pain_study_pipeline</a> (<a href="matlab: opentoline('C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_layer_sampling_pain_study_pipeline.m',102,0)">line 102</a>)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('layervalues', 'C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\1st_level_analysis\layervalues.m', 67)" style="font-weight:bold">layervalues</a> (<a href="matlab: opentoline('C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\1st_level_analysis\layervalues.m',67,0)">line 67</a>)] 
+Subject:7376The number of columns within the funcitonal mask: 2541
+Subject:7376The percent/number of columns acitvating in each run(t>0) for cognition: 54%/1364
+Subject:7376The percent/number of columns acitvating in each run(t>0) for pain: 52%/1311
+Subject:7376The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 29%/734
+-------------------------------------------------------------
+Subject:7376The number of columns within the funcitonal mask: 2541
+Subject:7376The percent/number of columns acitvating in each run(t>1) for cognition: 23%/580
+Subject:7376The percent/number of columns acitvating in each run(t>1) for pain: 16%/419
+Subject:7376The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 4%/108
+-------------------------------------------------------------
+Subject:7376The number of columns within the funcitonal mask: 4608
+Subject:7376The percent/number of columns acitvating in each run(t>0) for cognition: 51%/2341
+Subject:7376The percent/number of columns acitvating in each run(t>0) for pain: 51%/2353
+Subject:7376The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 27%/1247
+-------------------------------------------------------------
+Subject:7376The number of columns within the funcitonal mask: 4608
+Subject:7376The percent/number of columns acitvating in each run(t>1) for cognition: 20%/933
+Subject:7376The percent/number of columns acitvating in each run(t>1) for pain: 19%/854
+Subject:7376The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 4%/186
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 12.620688 seconds.
+Time for one subject to process:Elapsed time is 12.750632 seconds.
+7383 subject columnar info r
+Subject:7383The number of columns within the funcitonal mask: 2884
+Subject:7383The percent/number of columns acitvating in each run(t>0) for cognition: 44%/1268
+Subject:7383The percent/number of columns acitvating in each run(t>0) for pain: 53%/1534
+Subject:7383The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 24%/694
+-------------------------------------------------------------
+Subject:7383The number of columns within the funcitonal mask: 2884
+Subject:7383The percent/number of columns acitvating in each run(t>1) for cognition: 22%/636
+Subject:7383The percent/number of columns acitvating in each run(t>1) for pain: 20%/579
+Subject:7383The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 5%/142
+-------------------------------------------------------------
+Subject:7383The number of columns within the funcitonal mask: 3809
+Subject:7383The percent/number of columns acitvating in each run(t>0) for cognition: 54%/2074
+Subject:7383The percent/number of columns acitvating in each run(t>0) for pain: 59%/2242
+Subject:7383The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 32%/1217
+-------------------------------------------------------------
+Subject:7383The number of columns within the funcitonal mask: 3809
+Subject:7383The percent/number of columns acitvating in each run(t>1) for cognition: 29%/1109
+Subject:7383The percent/number of columns acitvating in each run(t>1) for pain: 25%/941
+Subject:7383The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 7%/267
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 11.254928 seconds.
+Time for one subject to process:Elapsed time is 11.378305 seconds.
+7402 subject columnar info r
+Subject:7402The number of columns within the funcitonal mask: 5230
+Subject:7402The percent/number of columns acitvating in each run(t>0) for cognition: 52%/2708
+Subject:7402The percent/number of columns acitvating in each run(t>0) for pain: 48%/2500
+Subject:7402The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 26%/1358
+-------------------------------------------------------------
+Subject:7402The number of columns within the funcitonal mask: 5230
+Subject:7402The percent/number of columns acitvating in each run(t>1) for cognition: 25%/1288
+Subject:7402The percent/number of columns acitvating in each run(t>1) for pain: 16%/855
+Subject:7402The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 5%/257
+-------------------------------------------------------------
+Subject:7402The number of columns within the funcitonal mask: 7545
+Subject:7402The percent/number of columns acitvating in each run(t>0) for cognition: 45%/3364
+Subject:7402The percent/number of columns acitvating in each run(t>0) for pain: 43%/3219
+Subject:7402The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 19%/1460
+-------------------------------------------------------------
+Subject:7402The number of columns within the funcitonal mask: 7545
+Subject:7402The percent/number of columns acitvating in each run(t>1) for cognition: 21%/1621
+Subject:7402The percent/number of columns acitvating in each run(t>1) for pain: 12%/938
+Subject:7402The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 3%/207
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 20.058467 seconds.
+Time for one subject to process:Elapsed time is 20.290534 seconds.
+7403 subject columnar info r
+Subject:7403The number of columns within the funcitonal mask: 2138
+Subject:7403The percent/number of columns acitvating in each run(t>0) for cognition: 44%/931
+Subject:7403The percent/number of columns acitvating in each run(t>0) for pain: 43%/928
+Subject:7403The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 19%/396
+-------------------------------------------------------------
+Subject:7403The number of columns within the funcitonal mask: 2138
+Subject:7403The percent/number of columns acitvating in each run(t>1) for cognition: 18%/389
+Subject:7403The percent/number of columns acitvating in each run(t>1) for pain: 13%/278
+Subject:7403The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 2%/51
+-------------------------------------------------------------
+Subject:7403The number of columns within the funcitonal mask: 3405
+Subject:7403The percent/number of columns acitvating in each run(t>0) for cognition: 47%/1617
+Subject:7403The percent/number of columns acitvating in each run(t>0) for pain: 38%/1288
+Subject:7403The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 18%/618
+-------------------------------------------------------------
+Subject:7403The number of columns within the funcitonal mask: 3405
+Subject:7403The percent/number of columns acitvating in each run(t>1) for cognition: 22%/754
+Subject:7403The percent/number of columns acitvating in each run(t>1) for pain: 10%/342
+Subject:7403The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 2%/72
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 9.928289 seconds.
+Time for one subject to process:Elapsed time is 10.039808 seconds.
+7404 subject columnar info r
+Subject:7404The number of columns within the funcitonal mask: 2107
+Subject:7404The percent/number of columns acitvating in each run(t>0) for cognition: 58%/1223
+Subject:7404The percent/number of columns acitvating in each run(t>0) for pain: 54%/1146
+Subject:7404The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 31%/663
+-------------------------------------------------------------
+Subject:7404The number of columns within the funcitonal mask: 2107
+Subject:7404The percent/number of columns acitvating in each run(t>1) for cognition: 25%/522
+Subject:7404The percent/number of columns acitvating in each run(t>1) for pain: 21%/440
+Subject:7404The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 5%/98
+-------------------------------------------------------------
+Subject:7404The number of columns within the funcitonal mask: 3318
+Subject:7404The percent/number of columns acitvating in each run(t>0) for cognition: 62%/2064
+Subject:7404The percent/number of columns acitvating in each run(t>0) for pain: 59%/1969
+Subject:7404The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 37%/1238
+-------------------------------------------------------------
+Subject:7404The number of columns within the funcitonal mask: 3318
+Subject:7404The percent/number of columns acitvating in each run(t>1) for cognition: 28%/913
+Subject:7404The percent/number of columns acitvating in each run(t>1) for pain: 23%/770
+Subject:7404The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 7%/237
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 10.136643 seconds.
+Time for one subject to process:Elapsed time is 10.249522 seconds.
+7405 subject columnar info r
+Subject:7405The number of columns within the funcitonal mask: 1632
+Subject:7405The percent/number of columns acitvating in each run(t>0) for cognition: 68%/1116
+Subject:7405The percent/number of columns acitvating in each run(t>0) for pain: 48%/785
+Subject:7405The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 36%/586
+-------------------------------------------------------------
+Subject:7405The number of columns within the funcitonal mask: 1632
+Subject:7405The percent/number of columns acitvating in each run(t>1) for cognition: 45%/736
+Subject:7405The percent/number of columns acitvating in each run(t>1) for pain: 16%/262
+Subject:7405The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 9%/145
+-------------------------------------------------------------
+Subject:7405The number of columns within the funcitonal mask: 3072
+Subject:7405The percent/number of columns acitvating in each run(t>0) for cognition: 75%/2299
+Subject:7405The percent/number of columns acitvating in each run(t>0) for pain: 54%/1666
+Subject:7405The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 42%/1279
+-------------------------------------------------------------
+Subject:7405The number of columns within the funcitonal mask: 3072
+Subject:7405The percent/number of columns acitvating in each run(t>1) for cognition: 45%/1380
+Subject:7405The percent/number of columns acitvating in each run(t>1) for pain: 21%/657
+Subject:7405The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 10%/319
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 9.732257 seconds.
+Time for one subject to process:Elapsed time is 9.827822 seconds.
+7408 subject columnar info r
+Subject:7408The number of columns within the funcitonal mask: 2195
+Subject:7408The percent/number of columns acitvating in each run(t>0) for cognition: 51%/1126
+Subject:7408The percent/number of columns acitvating in each run(t>0) for pain: 49%/1073
+Subject:7408The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 25%/558
+-------------------------------------------------------------
+Subject:7408The number of columns within the funcitonal mask: 2195
+Subject:7408The percent/number of columns acitvating in each run(t>1) for cognition: 24%/528
+Subject:7408The percent/number of columns acitvating in each run(t>1) for pain: 17%/381
+Subject:7408The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 5%/109
+-------------------------------------------------------------
+Subject:7408The number of columns within the funcitonal mask: 4119
+Subject:7408The percent/number of columns acitvating in each run(t>0) for cognition: 54%/2222
+Subject:7408The percent/number of columns acitvating in each run(t>0) for pain: 53%/2175
+Subject:7408The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 30%/1231
+-------------------------------------------------------------
+Subject:7408The number of columns within the funcitonal mask: 4119
+Subject:7408The percent/number of columns acitvating in each run(t>1) for cognition: 24%/968
+Subject:7408The percent/number of columns acitvating in each run(t>1) for pain: 22%/910
+Subject:7408The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 6%/263
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 11.754542 seconds.
+Time for one subject to process:Elapsed time is 11.870329 seconds.
+7414 subject columnar info r
+Subject:7414The number of columns within the funcitonal mask: 2191
+Subject:7414The percent/number of columns acitvating in each run(t>0) for cognition: 54%/1179
+Subject:7414The percent/number of columns acitvating in each run(t>0) for pain: 54%/1173
+Subject:7414The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 28%/609
+-------------------------------------------------------------
+Subject:7414The number of columns within the funcitonal mask: 2191
+Subject:7414The percent/number of columns acitvating in each run(t>1) for cognition: 24%/529
+Subject:7414The percent/number of columns acitvating in each run(t>1) for pain: 18%/401
+Subject:7414The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 4%/95
+-------------------------------------------------------------
+Subject:7414The number of columns within the funcitonal mask: 3764
+Subject:7414The percent/number of columns acitvating in each run(t>0) for cognition: 47%/1779
+Subject:7414The percent/number of columns acitvating in each run(t>0) for pain: 57%/2160
+Subject:7414The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 28%/1043
+-------------------------------------------------------------
+Subject:7414The number of columns within the funcitonal mask: 3764
+Subject:7414The percent/number of columns acitvating in each run(t>1) for cognition: 17%/656
+Subject:7414The percent/number of columns acitvating in each run(t>1) for pain: 21%/795
+Subject:7414The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 4%/149
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 10.585667 seconds.
+Time for one subject to process:Elapsed time is 10.684095 seconds.
+7415 subject columnar info r
+Subject:7415The number of columns within the funcitonal mask: 2148
+Subject:7415The percent/number of columns acitvating in each run(t>0) for cognition: 43%/918
+Subject:7415The percent/number of columns acitvating in each run(t>0) for pain: 44%/949
+Subject:7415The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 21%/446
+-------------------------------------------------------------
+Subject:7415The number of columns within the funcitonal mask: 2148
+Subject:7415The percent/number of columns acitvating in each run(t>1) for cognition: 20%/424
+Subject:7415The percent/number of columns acitvating in each run(t>1) for pain: 16%/346
+Subject:7415The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 4%/93
+-------------------------------------------------------------
+Subject:7415The number of columns within the funcitonal mask: 3728
+Subject:7415The percent/number of columns acitvating in each run(t>0) for cognition: 47%/1751
+Subject:7415The percent/number of columns acitvating in each run(t>0) for pain: 44%/1640
+Subject:7415The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 21%/801
+-------------------------------------------------------------
+Subject:7415The number of columns within the funcitonal mask: 3728
+Subject:7415The percent/number of columns acitvating in each run(t>1) for cognition: 20%/761
+Subject:7415The percent/number of columns acitvating in each run(t>1) for pain: 14%/516
+Subject:7415The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 3%/125
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 10.738009 seconds.
+Time for one subject to process:Elapsed time is 10.843824 seconds.
+7425 subject columnar info r
+Subject:7425The number of columns within the funcitonal mask: 2061
+Subject:7425The percent/number of columns acitvating in each run(t>0) for cognition: 57%/1167
+Subject:7425The percent/number of columns acitvating in each run(t>0) for pain: 45%/930
+Subject:7425The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 27%/553
+-------------------------------------------------------------
+Subject:7425The number of columns within the funcitonal mask: 2061
+Subject:7425The percent/number of columns acitvating in each run(t>1) for cognition: 28%/587
+Subject:7425The percent/number of columns acitvating in each run(t>1) for pain: 17%/355
+Subject:7425The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 6%/120
+-------------------------------------------------------------
+Subject:7425The number of columns within the funcitonal mask: 4017
+Subject:7425The percent/number of columns acitvating in each run(t>0) for cognition: 42%/1685
+Subject:7425The percent/number of columns acitvating in each run(t>0) for pain: 43%/1731
+Subject:7425The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 20%/821
+-------------------------------------------------------------
+Subject:7425The number of columns within the funcitonal mask: 4017
+Subject:7425The percent/number of columns acitvating in each run(t>1) for cognition: 19%/757
+Subject:7425The percent/number of columns acitvating in each run(t>1) for pain: 15%/618
+Subject:7425The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 4%/165
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 11.545512 seconds.
+Time for one subject to process:Elapsed time is 11.662745 seconds.
+7426 subject columnar info r
+Subject:7426The number of columns within the funcitonal mask: 2128
+Subject:7426The percent/number of columns acitvating in each run(t>0) for cognition: 59%/1250
+Subject:7426The percent/number of columns acitvating in each run(t>0) for pain: 47%/1001
+Subject:7426The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 29%/620
+-------------------------------------------------------------
+Subject:7426The number of columns within the funcitonal mask: 2128
+Subject:7426The percent/number of columns acitvating in each run(t>1) for cognition: 35%/743
+Subject:7426The percent/number of columns acitvating in each run(t>1) for pain: 17%/364
+Subject:7426The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 7%/144
+-------------------------------------------------------------
+Subject:7426The number of columns within the funcitonal mask: 3549
+Subject:7426The percent/number of columns acitvating in each run(t>0) for cognition: 61%/2155
+Subject:7426The percent/number of columns acitvating in each run(t>0) for pain: 51%/1794
+Subject:7426The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 32%/1137
+-------------------------------------------------------------
+Subject:7426The number of columns within the funcitonal mask: 3549
+Subject:7426The percent/number of columns acitvating in each run(t>1) for cognition: 33%/1154
+Subject:7426The percent/number of columns acitvating in each run(t>1) for pain: 19%/675
+Subject:7426The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 7%/256
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 10.821228 seconds.
+Time for one subject to process:Elapsed time is 10.949506 seconds.
+7433 subject columnar info r
+Subject:7433The number of columns within the funcitonal mask: 2638
+Subject:7433The percent/number of columns acitvating in each run(t>0) for cognition: 52%/1368
+Subject:7433The percent/number of columns acitvating in each run(t>0) for pain: 54%/1437
+Subject:7433The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 27%/709
+-------------------------------------------------------------
+Subject:7433The number of columns within the funcitonal mask: 2638
+Subject:7433The percent/number of columns acitvating in each run(t>1) for cognition: 21%/562
+Subject:7433The percent/number of columns acitvating in each run(t>1) for pain: 20%/521
+Subject:7433The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 4%/99
+-------------------------------------------------------------
+Subject:7433The number of columns within the funcitonal mask: 4528
+Subject:7433The percent/number of columns acitvating in each run(t>0) for cognition: 46%/2086
+Subject:7433The percent/number of columns acitvating in each run(t>0) for pain: 53%/2415
+Subject:7433The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 24%/1073
+-------------------------------------------------------------
+Subject:7433The number of columns within the funcitonal mask: 4528
+Subject:7433The percent/number of columns acitvating in each run(t>1) for cognition: 17%/761
+Subject:7433The percent/number of columns acitvating in each run(t>1) for pain: 18%/810
+Subject:7433The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 2%/106
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 13.338102 seconds.
+Time for one subject to process:Elapsed time is 13.470138 seconds.
+7434 subject columnar info r
+Subject:7434The number of columns within the funcitonal mask: 2195
+Subject:7434The percent/number of columns acitvating in each run(t>0) for cognition: 59%/1287
+Subject:7434The percent/number of columns acitvating in each run(t>0) for pain: 59%/1304
+Subject:7434The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 36%/780
+-------------------------------------------------------------
+Subject:7434The number of columns within the funcitonal mask: 2195
+Subject:7434The percent/number of columns acitvating in each run(t>1) for cognition: 26%/561
+Subject:7434The percent/number of columns acitvating in each run(t>1) for pain: 26%/563
+Subject:7434The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 8%/168
+-------------------------------------------------------------
+Subject:7434The number of columns within the funcitonal mask: 4214
+Subject:7434The percent/number of columns acitvating in each run(t>0) for cognition: 53%/2247
+Subject:7434The percent/number of columns acitvating in each run(t>0) for pain: 57%/2419
+Subject:7434The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 33%/1371
+-------------------------------------------------------------
+Subject:7434The number of columns within the funcitonal mask: 4214
+Subject:7434The percent/number of columns acitvating in each run(t>1) for cognition: 23%/982
+Subject:7434The percent/number of columns acitvating in each run(t>1) for pain: 24%/995
+Subject:7434The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 7%/304
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 11.939675 seconds.
+Time for one subject to process:Elapsed time is 12.062988 seconds.
+7435 subject columnar info r
+Subject:7435The number of columns within the funcitonal mask: 1845
+Subject:7435The percent/number of columns acitvating in each run(t>0) for cognition: 43%/793
+Subject:7435The percent/number of columns acitvating in each run(t>0) for pain: 46%/848
+Subject:7435The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 20%/367
+-------------------------------------------------------------
+Subject:7435The number of columns within the funcitonal mask: 1845
+Subject:7435The percent/number of columns acitvating in each run(t>1) for cognition: 19%/345
+Subject:7435The percent/number of columns acitvating in each run(t>1) for pain: 16%/303
+Subject:7435The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 4%/76
+-------------------------------------------------------------
+Subject:7435The number of columns within the funcitonal mask: 3106
+Subject:7435The percent/number of columns acitvating in each run(t>0) for cognition: 44%/1375
+Subject:7435The percent/number of columns acitvating in each run(t>0) for pain: 46%/1426
+Subject:7435The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 21%/654
+-------------------------------------------------------------
+Subject:7435The number of columns within the funcitonal mask: 3106
+Subject:7435The percent/number of columns acitvating in each run(t>1) for cognition: 19%/605
+Subject:7435The percent/number of columns acitvating in each run(t>1) for pain: 15%/468
+Subject:7435The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 4%/114
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 9.755737 seconds.
+Time for one subject to process:Elapsed time is 9.848897 seconds.
+7443 subject columnar info r
+Subject:7443The number of columns within the funcitonal mask: 2792
+Subject:7443The percent/number of columns acitvating in each run(t>0) for cognition: 53%/1466
+Subject:7443The percent/number of columns acitvating in each run(t>0) for pain: 53%/1469
+Subject:7443The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 27%/747
+-------------------------------------------------------------
+Subject:7443The number of columns within the funcitonal mask: 2792
+Subject:7443The percent/number of columns acitvating in each run(t>1) for cognition: 18%/504
+Subject:7443The percent/number of columns acitvating in each run(t>1) for pain: 17%/475
+Subject:7443The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 3%/81
+-------------------------------------------------------------
+Subject:7443The number of columns within the funcitonal mask: 4620
+Subject:7443The percent/number of columns acitvating in each run(t>0) for cognition: 53%/2451
+Subject:7443The percent/number of columns acitvating in each run(t>0) for pain: 52%/2410
+Subject:7443The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 28%/1291
+-------------------------------------------------------------
+Subject:7443The number of columns within the funcitonal mask: 4620
+Subject:7443The percent/number of columns acitvating in each run(t>1) for cognition: 20%/908
+Subject:7443The percent/number of columns acitvating in each run(t>1) for pain: 19%/879
+Subject:7443The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 3%/158
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 13.021318 seconds.
+Time for one subject to process:Elapsed time is 13.146758 seconds.
+7444 subject columnar info r
+Subject:7444The number of columns within the funcitonal mask: 2593
+Subject:7444The percent/number of columns acitvating in each run(t>0) for cognition: 65%/1694
+Subject:7444The percent/number of columns acitvating in each run(t>0) for pain: 59%/1527
+Subject:7444The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 39%/1024
+-------------------------------------------------------------
+Subject:7444The number of columns within the funcitonal mask: 2593
+Subject:7444The percent/number of columns acitvating in each run(t>1) for cognition: 37%/950
+Subject:7444The percent/number of columns acitvating in each run(t>1) for pain: 23%/605
+Subject:7444The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 10%/255
+-------------------------------------------------------------
+Subject:7444The number of columns within the funcitonal mask: 4791
+Subject:7444The percent/number of columns acitvating in each run(t>0) for cognition: 65%/3107
+Subject:7444The percent/number of columns acitvating in each run(t>0) for pain: 57%/2725
+Subject:7444The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 38%/1832
+-------------------------------------------------------------
+Subject:7444The number of columns within the funcitonal mask: 4791
+Subject:7444The percent/number of columns acitvating in each run(t>1) for cognition: 38%/1839
+Subject:7444The percent/number of columns acitvating in each run(t>1) for pain: 25%/1202
+Subject:7444The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 11%/543
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 12.456820 seconds.
+Time for one subject to process:Elapsed time is 12.598447 seconds.
+7445 subject columnar info r
+Subject:7445The number of columns within the funcitonal mask: 2588
+Subject:7445The percent/number of columns acitvating in each run(t>0) for cognition: 47%/1210
+Subject:7445The percent/number of columns acitvating in each run(t>0) for pain: 56%/1451
+Subject:7445The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 25%/656
+-------------------------------------------------------------
+Subject:7445The number of columns within the funcitonal mask: 2588
+Subject:7445The percent/number of columns acitvating in each run(t>1) for cognition: 22%/577
+Subject:7445The percent/number of columns acitvating in each run(t>1) for pain: 21%/553
+Subject:7445The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 4%/111
+-------------------------------------------------------------
+Subject:7445The number of columns within the funcitonal mask: 4827
+Subject:7445The percent/number of columns acitvating in each run(t>0) for cognition: 48%/2340
+Subject:7445The percent/number of columns acitvating in each run(t>0) for pain: 58%/2794
+Subject:7445The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 28%/1333
+-------------------------------------------------------------
+Subject:7445The number of columns within the funcitonal mask: 4827
+Subject:7445The percent/number of columns acitvating in each run(t>1) for cognition: 20%/945
+Subject:7445The percent/number of columns acitvating in each run(t>1) for pain: 23%/1112
+Subject:7445The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 4%/189
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 13.073900 seconds.
+Time for one subject to process:Elapsed time is 13.209312 seconds.
+7448 subject columnar info r
+[Warning: The ts is SHORTER!!! why?] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('BK_firstlvlanalysis', 'C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_firstlvlanalysis.m', 70)" style="font-weight:bold">BK_firstlvlanalysis</a> (<a href="matlab: opentoline('C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_firstlvlanalysis.m',70,0)">line 70</a>)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('BK_layer_sampling_pain_study_pipeline', 'C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_layer_sampling_pain_study_pipeline.m', 102)" style="font-weight:bold">BK_layer_sampling_pain_study_pipeline</a> (<a href="matlab: opentoline('C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\layerfication\BK_layer_sampling_pain_study_pipeline.m',102,0)">line 102</a>)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('layervalues', 'C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\1st_level_analysis\layervalues.m', 67)" style="font-weight:bold">layervalues</a> (<a href="matlab: opentoline('C:\Users\lenov\Documents\GitHub\LaminarfMRI_inPainPerception\1st_level_analysis\layervalues.m',67,0)">line 67</a>)] 
+Subject:7448The number of columns within the funcitonal mask: 1712
+Subject:7448The percent/number of columns acitvating in each run(t>0) for cognition: 67%/1139
+Subject:7448The percent/number of columns acitvating in each run(t>0) for pain: 61%/1043
+Subject:7448The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 42%/727
+-------------------------------------------------------------
+Subject:7448The number of columns within the funcitonal mask: 1712
+Subject:7448The percent/number of columns acitvating in each run(t>1) for cognition: 35%/599
+Subject:7448The percent/number of columns acitvating in each run(t>1) for pain: 25%/424
+Subject:7448The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 10%/176
+-------------------------------------------------------------
+Subject:7448The number of columns within the funcitonal mask: 3179
+Subject:7448The percent/number of columns acitvating in each run(t>0) for cognition: 68%/2176
+Subject:7448The percent/number of columns acitvating in each run(t>0) for pain: 59%/1889
+Subject:7448The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 43%/1375
+-------------------------------------------------------------
+Subject:7448The number of columns within the funcitonal mask: 3179
+Subject:7448The percent/number of columns acitvating in each run(t>1) for cognition: 38%/1193
+Subject:7448The percent/number of columns acitvating in each run(t>1) for pain: 25%/801
+Subject:7448The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 12%/379
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 8.123922 seconds.
+Time for one subject to process:Elapsed time is 8.198498 seconds.
+7449 subject columnar info r
+Subject:7449The number of columns within the funcitonal mask: 2155
+Subject:7449The percent/number of columns acitvating in each run(t>0) for cognition: 51%/1108
+Subject:7449The percent/number of columns acitvating in each run(t>0) for pain: 49%/1050
+Subject:7449The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 26%/564
+-------------------------------------------------------------
+Subject:7449The number of columns within the funcitonal mask: 2155
+Subject:7449The percent/number of columns acitvating in each run(t>1) for cognition: 22%/470
+Subject:7449The percent/number of columns acitvating in each run(t>1) for pain: 17%/370
+Subject:7449The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 5%/97
+-------------------------------------------------------------
+Subject:7449The number of columns within the funcitonal mask: 3965
+Subject:7449The percent/number of columns acitvating in each run(t>0) for cognition: 54%/2131
+Subject:7449The percent/number of columns acitvating in each run(t>0) for pain: 53%/2097
+Subject:7449The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 29%/1136
+-------------------------------------------------------------
+Subject:7449The number of columns within the funcitonal mask: 3965
+Subject:7449The percent/number of columns acitvating in each run(t>1) for cognition: 24%/948
+Subject:7449The percent/number of columns acitvating in each run(t>1) for pain: 20%/800
+Subject:7449The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 6%/219
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 10.903193 seconds.
+Time for one subject to process:Elapsed time is 11.009980 seconds.
+7452 subject columnar info r
+Subject:7452The number of columns within the funcitonal mask: 1704
+Subject:7452The percent/number of columns acitvating in each run(t>0) for cognition: 46%/787
+Subject:7452The percent/number of columns acitvating in each run(t>0) for pain: 52%/881
+Subject:7452The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 24%/409
+-------------------------------------------------------------
+Subject:7452The number of columns within the funcitonal mask: 1704
+Subject:7452The percent/number of columns acitvating in each run(t>1) for cognition: 17%/296
+Subject:7452The percent/number of columns acitvating in each run(t>1) for pain: 18%/302
+Subject:7452The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 4%/62
+-------------------------------------------------------------
+Subject:7452The number of columns within the funcitonal mask: 3209
+Subject:7452The percent/number of columns acitvating in each run(t>0) for cognition: 53%/1694
+Subject:7452The percent/number of columns acitvating in each run(t>0) for pain: 46%/1483
+Subject:7452The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 24%/786
+-------------------------------------------------------------
+Subject:7452The number of columns within the funcitonal mask: 3209
+Subject:7452The percent/number of columns acitvating in each run(t>1) for cognition: 24%/759
+Subject:7452The percent/number of columns acitvating in each run(t>1) for pain: 16%/505
+Subject:7452The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 4%/127
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 9.737520 seconds.
+Time for one subject to process:Elapsed time is 9.831819 seconds.
+7453 subject columnar info r
+Subject:7453The number of columns within the funcitonal mask: 1760
+Subject:7453The percent/number of columns acitvating in each run(t>0) for cognition: 61%/1073
+Subject:7453The percent/number of columns acitvating in each run(t>0) for pain: 58%/1021
+Subject:7453The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 36%/627
+-------------------------------------------------------------
+Subject:7453The number of columns within the funcitonal mask: 1760
+Subject:7453The percent/number of columns acitvating in each run(t>1) for cognition: 27%/482
+Subject:7453The percent/number of columns acitvating in each run(t>1) for pain: 22%/395
+Subject:7453The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 6%/108
+-------------------------------------------------------------
+Subject:7453The number of columns within the funcitonal mask: 3689
+Subject:7453The percent/number of columns acitvating in each run(t>0) for cognition: 52%/1931
+Subject:7453The percent/number of columns acitvating in each run(t>0) for pain: 60%/2231
+Subject:7453The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 30%/1117
+-------------------------------------------------------------
+Subject:7453The number of columns within the funcitonal mask: 3689
+Subject:7453The percent/number of columns acitvating in each run(t>1) for cognition: 22%/812
+Subject:7453The percent/number of columns acitvating in each run(t>1) for pain: 24%/880
+Subject:7453The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 5%/195
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 10.254260 seconds.
+Time for one subject to process:Elapsed time is 10.354646 seconds.
+7454 subject columnar info r
+Subject:7454The number of columns within the funcitonal mask: 2018
+Subject:7454The percent/number of columns acitvating in each run(t>0) for cognition: 60%/1202
+Subject:7454The percent/number of columns acitvating in each run(t>0) for pain: 57%/1158
+Subject:7454The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 33%/666
+-------------------------------------------------------------
+Subject:7454The number of columns within the funcitonal mask: 2018
+Subject:7454The percent/number of columns acitvating in each run(t>1) for cognition: 28%/571
+Subject:7454The percent/number of columns acitvating in each run(t>1) for pain: 25%/507
+Subject:7454The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 7%/143
+-------------------------------------------------------------
+Subject:7454The number of columns within the funcitonal mask: 3485
+Subject:7454The percent/number of columns acitvating in each run(t>0) for cognition: 70%/2440
+Subject:7454The percent/number of columns acitvating in each run(t>0) for pain: 66%/2283
+Subject:7454The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 46%/1616
+-------------------------------------------------------------
+Subject:7454The number of columns within the funcitonal mask: 3485
+Subject:7454The percent/number of columns acitvating in each run(t>1) for cognition: 38%/1309
+Subject:7454The percent/number of columns acitvating in each run(t>1) for pain: 32%/1112
+Subject:7454The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 13%/457
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 10.356576 seconds.
+Time for one subject to process:Elapsed time is 10.467643 seconds.
+7455 subject columnar info r
+Subject:7455The number of columns within the funcitonal mask: 1904
+Subject:7455The percent/number of columns acitvating in each run(t>0) for cognition: 48%/913
+Subject:7455The percent/number of columns acitvating in each run(t>0) for pain: 59%/1126
+Subject:7455The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 30%/570
+-------------------------------------------------------------
+Subject:7455The number of columns within the funcitonal mask: 1904
+Subject:7455The percent/number of columns acitvating in each run(t>1) for cognition: 21%/406
+Subject:7455The percent/number of columns acitvating in each run(t>1) for pain: 21%/405
+Subject:7455The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 6%/107
+-------------------------------------------------------------
+Subject:7455The number of columns within the funcitonal mask: 3078
+Subject:7455The percent/number of columns acitvating in each run(t>0) for cognition: 50%/1549
+Subject:7455The percent/number of columns acitvating in each run(t>0) for pain: 50%/1551
+Subject:7455The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 26%/812
+-------------------------------------------------------------
+Subject:7455The number of columns within the funcitonal mask: 3078
+Subject:7455The percent/number of columns acitvating in each run(t>1) for cognition: 21%/652
+Subject:7455The percent/number of columns acitvating in each run(t>1) for pain: 19%/577
+Subject:7455The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 5%/161
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 9.353329 seconds.
+Time for one subject to process:Elapsed time is 9.445056 seconds.
+7456 subject columnar info r
+Subject:7456The number of columns within the funcitonal mask: 1922
+Subject:7456The percent/number of columns acitvating in each run(t>0) for cognition: 52%/1008
+Subject:7456The percent/number of columns acitvating in each run(t>0) for pain: 55%/1048
+Subject:7456The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 29%/559
+-------------------------------------------------------------
+Subject:7456The number of columns within the funcitonal mask: 1922
+Subject:7456The percent/number of columns acitvating in each run(t>1) for cognition: 23%/443
+Subject:7456The percent/number of columns acitvating in each run(t>1) for pain: 21%/397
+Subject:7456The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 5%/99
+-------------------------------------------------------------
+Subject:7456The number of columns within the funcitonal mask: 3798
+Subject:7456The percent/number of columns acitvating in each run(t>0) for cognition: 54%/2033
+Subject:7456The percent/number of columns acitvating in each run(t>0) for pain: 56%/2145
+Subject:7456The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 30%/1145
+-------------------------------------------------------------
+Subject:7456The number of columns within the funcitonal mask: 3798
+Subject:7456The percent/number of columns acitvating in each run(t>1) for cognition: 23%/877
+Subject:7456The percent/number of columns acitvating in each run(t>1) for pain: 22%/846
+Subject:7456The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 5%/196
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 10.673787 seconds.
+Time for one subject to process:Elapsed time is 10.786767 seconds.
+7457 subject columnar info r
+Subject:7457The number of columns within the funcitonal mask: 2330
+Subject:7457The percent/number of columns acitvating in each run(t>0) for cognition: 50%/1164
+Subject:7457The percent/number of columns acitvating in each run(t>0) for pain: 59%/1380
+Subject:7457The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 30%/695
+-------------------------------------------------------------
+Subject:7457The number of columns within the funcitonal mask: 2330
+Subject:7457The percent/number of columns acitvating in each run(t>1) for cognition: 25%/576
+Subject:7457The percent/number of columns acitvating in each run(t>1) for pain: 23%/529
+Subject:7457The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 6%/143
+-------------------------------------------------------------
+Subject:7457The number of columns within the funcitonal mask: 3567
+Subject:7457The percent/number of columns acitvating in each run(t>0) for cognition: 50%/1798
+Subject:7457The percent/number of columns acitvating in each run(t>0) for pain: 54%/1944
+Subject:7457The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 27%/979
+-------------------------------------------------------------
+Subject:7457The number of columns within the funcitonal mask: 3567
+Subject:7457The percent/number of columns acitvating in each run(t>1) for cognition: 21%/748
+Subject:7457The percent/number of columns acitvating in each run(t>1) for pain: 20%/712
+Subject:7457The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 4%/159
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 10.891766 seconds.
+Time for one subject to process:Elapsed time is 10.994600 seconds.
+7468 subject columnar info r
+Subject:7468The number of columns within the funcitonal mask: 1595
+Subject:7468The percent/number of columns acitvating in each run(t>0) for cognition: 54%/854
+Subject:7468The percent/number of columns acitvating in each run(t>0) for pain: 54%/857
+Subject:7468The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 30%/480
+-------------------------------------------------------------
+Subject:7468The number of columns within the funcitonal mask: 1595
+Subject:7468The percent/number of columns acitvating in each run(t>1) for cognition: 25%/397
+Subject:7468The percent/number of columns acitvating in each run(t>1) for pain: 21%/338
+Subject:7468The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 6%/94
+-------------------------------------------------------------
+Subject:7468The number of columns within the funcitonal mask: 3012
+Subject:7468The percent/number of columns acitvating in each run(t>0) for cognition: 52%/1560
+Subject:7468The percent/number of columns acitvating in each run(t>0) for pain: 47%/1428
+Subject:7468The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 26%/788
+-------------------------------------------------------------
+Subject:7468The number of columns within the funcitonal mask: 3012
+Subject:7468The percent/number of columns acitvating in each run(t>1) for cognition: 22%/659
+Subject:7468The percent/number of columns acitvating in each run(t>1) for pain: 18%/552
+Subject:7468The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 5%/163
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 9.068136 seconds.
+Time for one subject to process:Elapsed time is 9.142474 seconds.
+7469 subject columnar info r
+Subject:7469The number of columns within the funcitonal mask: 2537
+Subject:7469The percent/number of columns acitvating in each run(t>0) for cognition: 57%/1435
+Subject:7469The percent/number of columns acitvating in each run(t>0) for pain: 72%/1821
+Subject:7469The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 41%/1037
+-------------------------------------------------------------
+Subject:7469The number of columns within the funcitonal mask: 2537
+Subject:7469The percent/number of columns acitvating in each run(t>1) for cognition: 26%/669
+Subject:7469The percent/number of columns acitvating in each run(t>1) for pain: 43%/1079
+Subject:7469The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 13%/329
+-------------------------------------------------------------
+Subject:7469The number of columns within the funcitonal mask: 3639
+Subject:7469The percent/number of columns acitvating in each run(t>0) for cognition: 61%/2236
+Subject:7469The percent/number of columns acitvating in each run(t>0) for pain: 72%/2632
+Subject:7469The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 46%/1669
+-------------------------------------------------------------
+Subject:7469The number of columns within the funcitonal mask: 3639
+Subject:7469The percent/number of columns acitvating in each run(t>1) for cognition: 30%/1075
+Subject:7469The percent/number of columns acitvating in each run(t>1) for pain: 47%/1695
+Subject:7469The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 16%/595
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 10.974445 seconds.
+Time for one subject to process:Elapsed time is 11.088516 seconds.
+7482 subject columnar info r
+Subject:7482The number of columns within the funcitonal mask: 2046
+Subject:7482The percent/number of columns acitvating in each run(t>0) for cognition: 62%/1277
+Subject:7482The percent/number of columns acitvating in each run(t>0) for pain: 41%/842
+Subject:7482The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 25%/509
+-------------------------------------------------------------
+Subject:7482The number of columns within the funcitonal mask: 2046
+Subject:7482The percent/number of columns acitvating in each run(t>1) for cognition: 29%/598
+Subject:7482The percent/number of columns acitvating in each run(t>1) for pain: 13%/261
+Subject:7482The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 4%/86
+-------------------------------------------------------------
+Subject:7482The number of columns within the funcitonal mask: 3335
+Subject:7482The percent/number of columns acitvating in each run(t>0) for cognition: 62%/2071
+Subject:7482The percent/number of columns acitvating in each run(t>0) for pain: 38%/1281
+Subject:7482The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 23%/773
+-------------------------------------------------------------
+Subject:7482The number of columns within the funcitonal mask: 3335
+Subject:7482The percent/number of columns acitvating in each run(t>1) for cognition: 30%/1009
+Subject:7482The percent/number of columns acitvating in each run(t>1) for pain: 12%/401
+Subject:7482The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 3%/100
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 10.827690 seconds.
+Time for one subject to process:Elapsed time is 10.932384 seconds.
+7484 subject columnar info r
+Subject:7484The number of columns within the funcitonal mask: 1840
+Subject:7484The percent/number of columns acitvating in each run(t>0) for cognition: 55%/1013
+Subject:7484The percent/number of columns acitvating in each run(t>0) for pain: 56%/1025
+Subject:7484The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 30%/549
+-------------------------------------------------------------
+Subject:7484The number of columns within the funcitonal mask: 1840
+Subject:7484The percent/number of columns acitvating in each run(t>1) for cognition: 30%/554
+Subject:7484The percent/number of columns acitvating in each run(t>1) for pain: 22%/413
+Subject:7484The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 8%/139
+-------------------------------------------------------------
+Subject:7484The number of columns within the funcitonal mask: 3506
+Subject:7484The percent/number of columns acitvating in each run(t>0) for cognition: 66%/2318
+Subject:7484The percent/number of columns acitvating in each run(t>0) for pain: 55%/1915
+Subject:7484The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 36%/1267
+-------------------------------------------------------------
+Subject:7484The number of columns within the funcitonal mask: 3506
+Subject:7484The percent/number of columns acitvating in each run(t>1) for cognition: 37%/1290
+Subject:7484The percent/number of columns acitvating in each run(t>1) for pain: 19%/682
+Subject:7484The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 7%/240
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 10.889939 seconds.
+Time for one subject to process:Elapsed time is 10.990942 seconds.
+7485 subject columnar info r
+Subject:7485The number of columns within the funcitonal mask: 2102
+Subject:7485The percent/number of columns acitvating in each run(t>0) for cognition: 62%/1311
+Subject:7485The percent/number of columns acitvating in each run(t>0) for pain: 56%/1174
+Subject:7485The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 36%/754
+-------------------------------------------------------------
+Subject:7485The number of columns within the funcitonal mask: 2102
+Subject:7485The percent/number of columns acitvating in each run(t>1) for cognition: 33%/699
+Subject:7485The percent/number of columns acitvating in each run(t>1) for pain: 22%/462
+Subject:7485The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 8%/169
+-------------------------------------------------------------
+Subject:7485The number of columns within the funcitonal mask: 3877
+Subject:7485The percent/number of columns acitvating in each run(t>0) for cognition: 64%/2493
+Subject:7485The percent/number of columns acitvating in each run(t>0) for pain: 56%/2178
+Subject:7485The percent/number of columns acitvating in each run(t>0) for cognition AND pain: 36%/1408
+-------------------------------------------------------------
+Subject:7485The number of columns within the funcitonal mask: 3877
+Subject:7485The percent/number of columns acitvating in each run(t>1) for cognition: 38%/1476
+Subject:7485The percent/number of columns acitvating in each run(t>1) for pain: 22%/839
+Subject:7485The percent/number of columns acitvating in each run(t>1) for cognition AND pain: 9%/341
+-------------------------------------------------------------
+time for laminar activation:Elapsed time is 11.095458 seconds.
+Time for one subject to process:Elapsed time is 11.208583 seconds.
+
+S2_binnedcolumns =
+
+  34×1 <a href="matlab:helpPopup cell" style="font-weight:bold">cell</a> array
+
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+    {2×4 cell}
+
+
+procesubjid =
+
+  Columns 1 through 8
+
+        7349        7356        7361        7375        7376        7383        7402        7403
+
+  Columns 9 through 16
+
+        7404        7405        7408        7414        7415        7425        7426        7433
+
+  Columns 17 through 24
+
+        7434        7435        7443        7444        7445        7448        7449        7452
+
+  Columns 25 through 32
+
+        7453        7454        7455        7456        7457        7468        7469        7482
+
+  Columns 33 through 34
+
+        7484        7485
+
+
+columndistr =
+
+  34×1 <a href="matlab:helpPopup cell" style="font-weight:bold">cell</a> array
+
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+    {1×2 cell}
+
+dbcont
+alldata
+
+alldata =
+
+  1×4 <a href="matlab:helpPopup cell" style="font-weight:bold">cell</a> array
+
+    {34×20 double}    {34×20 double}    {34×20 double}    {34×20 double}
+
+alldata{1,1}
+
+ans =
+
+  Columns 1 through 10
+
+  -13.5223  -11.3066   -8.6400   -7.0970   -7.3890   -9.2372  -11.6869  -14.5977  -17.7545  -20.7096
+  -19.8289  -21.8371  -23.5852  -26.2484  -29.3349  -32.7226  -34.1618  -34.1829  -34.7412  -36.7459
+   -9.6942  -12.6210  -14.4559  -16.1564  -18.0054  -19.6228  -21.3124  -22.5691  -24.2767  -26.4819
+  -16.0511  -19.2084  -21.6644  -23.0208  -23.9487  -24.4401  -25.6591  -27.2119  -28.8546  -31.9332
+  -10.8663  -10.9678  -10.1410   -9.5666   -9.8404  -10.6632  -11.5158  -12.8635  -14.4909  -14.7290
+  -16.5152  -17.9971  -18.6847  -18.1792  -16.7960  -15.9275  -16.4231  -18.5942  -22.8965  -28.2922
+    1.7316    0.5738   -1.4338   -4.2508   -7.7837  -10.9123  -13.2542  -14.5616  -15.5004  -16.4158
+  -10.9510   -9.8787   -8.6516   -7.5471   -7.1087   -8.2413  -11.2950  -15.9642  -21.2989  -25.8248
+    2.1001    1.0569    0.3571   -0.5910   -2.0907   -4.1767   -6.5747   -9.2510  -10.3928  -11.5450
+   -8.1121   -3.4919    0.6329    4.1259    6.1403    6.9060    6.2831    4.5810    2.4303    0.3477
+   -6.5928   -9.2572  -11.9907  -14.4069  -15.8947  -15.0332  -12.7743  -11.9514  -13.6158  -16.6351
+  -14.4184  -12.0078   -9.9722   -8.7876   -8.5564   -9.7738  -12.7714  -15.4595  -17.2289  -17.9801
+   -1.7804   -3.0430   -5.1923   -7.1411   -8.4738   -8.9024   -8.2265   -7.4914   -7.3550   -8.5158
+   -6.3355   -5.0010   -2.6412    0.9396    4.6943    6.7741    5.9272    2.1474   -3.5957   -8.7274
+   -5.8769   -5.5396   -5.0395   -4.7429   -4.3418   -4.2141   -4.0316   -3.6632   -4.2386   -5.9032
+    1.1506   -3.2873   -6.6866   -8.4852   -8.2257   -5.4362   -2.0999    0.3456    2.2433    3.2032
+   -8.7881   -8.8669   -8.6849   -8.4366   -7.9977   -8.2136   -8.6092   -8.9153   -8.8250   -8.7626
+   -4.1700   -5.3171   -7.2339  -10.2064  -12.7780  -13.7245  -13.2905  -11.9628   -9.4966   -7.9460
+   -1.7592   -2.0950   -2.5408   -3.2389   -3.3562   -3.1515   -3.2134   -3.5373   -3.9894   -4.7495
+   -3.2340   -7.6374  -12.2091  -15.6838  -18.2812  -20.1571  -22.0106  -23.1090  -23.8890  -25.4379
+   -8.4700  -10.9303  -12.2498  -12.5188  -12.0768  -11.3128  -11.4784  -12.4850  -14.3322  -17.0439
+    0.3578   -1.8780   -4.4917   -6.7807   -7.7545   -8.0672   -7.3620   -6.4139   -5.8277   -5.9168
+   -5.0855   -6.0273   -6.2616   -6.4662   -6.2912   -7.2085   -9.4718  -12.4256  -14.6529  -14.4185
+  -12.2922  -10.8433   -7.2510   -2.9232   -1.3236   -2.0524   -2.9393   -2.8474   -1.4796   -0.9308
+    1.2825    0.8122    0.4480    0.0354   -1.0030   -2.0421   -2.3280   -1.3959    1.1983    4.5330
+    5.4084    6.0027    7.1302    8.3410    9.5209   10.6297   11.2801   11.1518    9.1711    5.4630
+    7.9019    9.1518    9.7505    9.7409    9.6751    9.4067    8.9773    8.4419    8.5138    8.2517
+    0.8065    0.3528    0.0260    0.2792    1.5617    2.7099    3.3367    3.9149    3.3619    1.4987
+  -12.4392  -17.8958  -22.1411  -24.2448  -24.3715  -22.7682  -20.6092  -19.3580  -19.8228  -22.2738
+   -0.1793    0.6548    0.1684   -1.0855   -2.3249   -3.5451   -4.4398   -4.8991   -5.5772   -6.4070
+  -10.2237  -12.7226  -15.1741  -16.6885  -16.7175  -15.8498  -13.7429  -11.2542   -9.1244   -8.7024
+   -3.2779   -2.8170   -3.1654   -3.9303   -4.7583   -5.1996   -4.6711   -3.6185   -2.3114   -1.5773
+  -13.4541  -13.2867  -11.7642   -9.7543   -8.2931   -7.0376   -6.3503   -6.9199   -7.7436  -10.0081
+   -3.5853   -4.2194   -4.1128   -3.5293   -2.8088   -1.6066   -0.3356    0.9714    2.2738    3.4171
+
+  Columns 11 through 20
+
+  -23.7333  -26.6662  -28.6152  -29.4662  -30.8421  -31.9653  -31.7418  -29.4775  -26.9598  -25.1610
+  -38.6391  -38.5116  -35.1810  -30.4494  -26.7557  -25.8817  -28.6000  -31.9820  -34.6718  -35.5620
+  -29.3302  -32.1934  -33.9491  -33.8000  -32.2139  -30.5955  -28.2436  -25.6068  -22.4128  -19.3385
+  -37.1353  -43.1431  -49.8822  -56.7808  -63.2241  -68.0375  -71.3441  -73.1685  -72.9487  -70.9401
+  -14.3159  -12.7640  -10.3509   -7.3387   -5.9649   -6.1017   -7.5322   -9.3655  -11.3684  -13.0123
+  -32.3140  -35.0950  -36.2886  -36.5829  -37.4535  -38.7517  -40.5563  -42.3297  -40.8102  -34.7145
+  -17.3905  -18.6981  -20.2014  -22.0780  -24.5669  -27.2569  -30.1066  -33.0840  -34.5346  -34.2906
+  -29.1504  -31.6718  -34.2450  -37.0640  -40.6407  -45.8018  -51.8331  -58.0518  -63.8478  -68.8811
+  -12.5787  -13.4323  -14.4658  -14.5886  -13.9855  -12.4050  -10.7881   -8.6380   -6.5547   -4.8698
+   -1.1106   -2.6063   -4.6811   -7.1143   -9.9952  -13.1672  -15.0391  -15.7369  -15.2974  -14.4570
+  -19.8213  -21.3041  -19.9659  -16.2185  -12.2204  -11.4256  -12.2834  -14.3344  -15.4805  -16.3291
+  -18.3094  -18.0467  -18.7170  -19.9129  -20.5626  -21.1530  -20.4254  -19.0794  -17.9654  -17.0577
+  -11.3580  -16.7179  -22.4914  -28.1010  -30.3416  -28.5961  -24.3743  -19.9661  -15.2834  -10.2268
+  -14.0077  -18.0301  -20.8178  -23.7771  -25.5243  -27.1092  -27.5526  -26.1658  -24.0357  -21.3390
+   -8.6329  -11.0852  -12.9223  -13.4802  -12.1381  -10.2959   -8.1644   -6.7499   -6.2210   -5.2796
+    2.5330    0.7561   -1.6754   -3.8709   -5.8888   -7.6547   -9.5601  -11.7216  -14.4494  -16.7015
+   -9.5817  -11.4857  -14.4819  -18.0664  -20.4874  -22.1457  -23.1255  -23.4396  -24.0167  -25.4634
+   -6.0365   -4.1312   -2.4373   -0.4123    0.1680   -1.6850   -4.8164   -7.6783   -9.5710   -9.1260
+   -6.2938   -8.0273   -9.7273  -11.1994  -12.0600  -12.9573  -14.1384  -15.2414  -16.0756  -15.5593
+  -26.9474  -29.0918  -31.4322  -33.4878  -35.3202  -35.9973  -36.8618  -37.5245  -38.6622  -39.6561
+  -20.4417  -23.2175  -24.5987  -24.3550  -23.1327  -21.0293  -18.5980  -16.1977  -14.2194  -12.7710
+   -6.6459   -7.2458   -7.6712   -8.6377   -9.8319  -11.5702  -13.6028  -14.5950  -14.7493  -14.5085
+  -12.4475   -9.4698   -6.7495   -3.5470   -0.0741    3.4037    6.9909    8.2767    7.8334    5.3772
+    0.6384    2.1930    3.8102    5.7737    7.2242   10.0053   13.6987   16.8895   17.4683   15.3276
+    7.2897    8.8204    9.1122    7.7799    4.8025    1.6365   -1.4888   -3.7775   -4.2352   -2.5946
+    0.4468   -5.2352   -8.9667  -11.0523  -10.7299   -8.3187   -4.2856    0.0983    3.3600    6.1321
+    7.3274    5.3760    3.0297    0.5097   -1.5466   -2.1948   -1.4773   -0.3209    1.1883    2.7757
+   -1.2312   -4.9481   -9.8526  -15.6375  -20.0798  -23.7093  -24.1561  -20.7118  -14.5884   -7.0467
+  -26.8736  -33.3436  -41.2511  -49.7557  -58.3332  -66.1827  -72.0616  -74.7364  -74.0940  -70.4227
+   -6.4407   -5.2100   -3.7565   -2.4805   -0.3502    1.3377    2.8439    4.7212    6.0263    5.3777
+  -11.4721  -16.6104  -24.9151  -34.7569  -44.6324  -53.3444  -59.7592  -63.0071  -64.1778  -62.7724
+   -1.7458   -2.2069   -3.2919   -4.5842   -6.0421   -7.9173  -11.0945  -14.8537  -18.1404  -21.2593
+  -12.9199  -15.2949  -16.5157  -15.5106  -13.1181   -9.9289   -7.2197   -5.2134   -4.8706   -6.3442
+    3.3211    2.4092    1.0228   -1.1453   -2.8699   -3.3476   -3.0836   -2.0551   -0.9485   -0.1869
+
+dbcont
+dbcont
+alldata{1,1}
+
+ans =
+
+  Columns 1 through 10
+
+  -19.6316  -16.6518  -12.0774   -7.7199   -4.5280   -3.1854   -3.6207   -5.6659   -8.1071   -9.4641
+  -16.8969  -18.8793  -19.5514  -19.8479  -20.7145  -22.3784  -25.3883  -27.9358  -29.3901  -29.3331
+  -10.9302  -13.2025  -14.1036  -14.6838  -15.4173  -16.6339  -18.5609  -20.6486  -21.7446  -22.9855
+  -15.4382  -16.8177  -18.2608  -20.2624  -21.6045  -22.2605  -22.0808  -21.3957  -20.1117  -19.5768
+   -4.3407   -1.7279    0.8516    2.8999    3.4285    2.4798   -1.0648   -6.4293  -12.5057  -17.9011
+  -20.0468  -20.4557  -18.8515  -16.2955  -13.3889  -10.8925  -10.1843  -11.1531  -13.0795  -14.5876
+   -4.9181   -8.8742  -12.6350  -16.1841  -18.9159  -20.3925  -20.7089  -19.5621  -17.3592  -14.1459
+   -5.5863   -5.2381   -5.5027   -6.4354   -7.2775   -8.1893   -8.5205   -8.2757   -8.3322   -9.2344
+   -1.0394    0.4033    1.2051    1.1353   -0.2214   -1.8893   -2.9772   -3.2683   -2.9807   -2.4710
+   -9.5485   -4.9882    0.1928    3.8035    4.9287    2.8720   -1.2519   -5.7164   -8.2506   -8.2676
+  -11.3010  -11.9448  -12.0903  -10.3167   -7.0580   -4.1574   -2.5283   -1.6196   -1.6860   -1.7537
+  -10.8991  -12.3778  -14.0140  -15.4172  -15.8080  -14.7551  -12.2917   -9.2228   -8.0823   -8.7915
+    7.5438    5.2329    1.8577   -1.8379   -4.2620   -5.3123   -6.3543   -7.7810   -9.7595  -12.3643
+   -3.4492   -2.4596   -2.0015   -1.4292   -1.2089   -2.0335   -3.6159   -5.6866   -9.0789  -13.2157
+    0.0011   -0.0499    0.1550    0.1246   -0.1493   -0.9508   -2.2438   -4.5705   -7.2794  -10.5446
+    2.2131   -0.7785   -2.6786   -3.5637   -3.6910   -3.1298   -2.9104   -3.9012   -7.1960  -11.3361
+   -7.5463   -8.8315   -9.3522   -8.5429   -6.8231   -5.7683   -5.6868   -7.0620   -8.4087   -9.6572
+   -5.2496   -5.7551   -7.5373   -9.6587  -10.9066  -11.5374  -11.2440  -10.7300  -10.3835   -9.8914
+   -2.7565   -0.9990    0.5171    0.9535    0.8082    0.4607    0.1090   -0.1773   -0.9397   -1.5696
+    1.5050   -1.5703   -4.8761   -7.6491   -9.5754  -11.3422  -13.1115  -14.4858  -16.4431  -19.0527
+  -12.5345  -14.4567  -15.9493  -17.7523  -19.3503  -19.7454  -18.8146  -16.0752  -13.5001  -11.9392
+    3.2701    0.3881   -3.7840   -7.4797   -9.1674   -9.0305   -7.0855   -4.7223   -3.5680   -3.6123
+   -5.5944   -6.9402   -7.8252   -7.9240   -8.3352   -9.3079  -11.2371  -13.3896  -15.1200  -16.8314
+   -6.1536   -2.1558   -0.0792    0.0511   -0.8314   -0.9984   -0.5489    0.2801    0.0682    0.9262
+   -4.2025   -4.1228   -4.7133   -5.6584   -6.4530   -7.0628   -8.2265   -8.6089   -8.1433   -7.7536
+    3.0307    4.3396    5.8737    8.3200   10.7782   12.5730   13.8212   14.2159   13.3700   12.0996
+    3.3329    4.8585    6.0767    6.7770    6.8251    6.0579    5.1351    4.0984    2.7995    1.7043
+   -7.2114   -8.2832   -7.9204   -5.7432   -2.0703    1.8319    4.3017    2.8059   -0.4199   -3.6211
+   -1.3990   -2.9891   -5.5291   -8.9490  -12.6806  -16.1543  -18.2462  -19.2798  -20.2259  -21.3942
+   -1.0026   -0.8925   -1.2876   -2.3642   -3.6507   -4.7961   -5.9516   -6.5718   -5.9477   -4.9109
+  -13.3519  -14.5467  -14.8021  -13.9980  -12.2757   -9.5726   -7.1053   -6.0457   -6.0028   -7.5844
+   -3.8017   -4.9162   -5.6458   -6.4285   -6.8743   -6.6704   -6.1170   -5.1270   -3.3391   -1.0586
+   -9.0323   -8.2102   -6.9839   -5.4028   -3.9818   -3.1024   -3.0976   -4.9194   -8.0699  -12.1225
+   -6.2208   -6.7023   -7.0675   -6.3090   -4.7041   -2.4888    0.0204    2.2807    3.3205    3.4475
+
+  Columns 11 through 20
+
+  -10.6496  -11.4859  -12.2506  -12.2616  -10.7609   -8.8240   -7.8339   -6.2762   -6.0882   -5.1847
+  -28.0248  -26.9194  -25.8422  -24.7092  -24.1239  -23.9551  -24.9016  -27.1598  -29.3613  -31.6889
+  -24.7346  -27.0613  -30.2704  -33.2828  -35.7133  -36.7004  -36.0312  -34.3857  -32.5126  -30.9700
+  -20.1570  -21.9473  -24.9482  -30.9117  -38.8354  -47.3755  -54.6719  -58.5891  -57.9110  -54.8159
+  -22.5204  -24.2323  -23.9489  -21.9827  -18.8572  -15.8864  -12.6203  -10.2168   -8.6400   -7.1183
+  -14.9925  -14.7120  -14.6463  -17.1007  -21.2718  -25.9539  -29.8122  -30.8787  -28.7504  -23.8603
+  -11.8396  -11.5294  -13.2910  -16.4913  -20.4136  -24.3361  -26.5582  -26.7165  -24.2555  -20.0660
+  -11.4311  -15.4948  -20.6956  -26.5414  -33.0824  -39.5135  -44.9192  -49.0220  -51.3299  -51.3429
+   -2.4899   -2.9056   -3.0534   -3.6249   -4.6997   -6.3489   -7.9367   -8.8302   -8.6319   -7.8352
+   -6.6163   -4.4915   -4.6827   -6.3794   -9.1557  -11.9980  -13.0683  -13.4314  -12.2657  -12.1550
+   -2.3264   -4.1366   -8.4853  -13.6693  -19.2833  -23.2088  -23.2611  -19.8726  -13.3721   -7.9117
+  -11.1566  -15.2022  -19.3512  -21.5724  -22.9749  -23.7114  -24.1859  -25.6362  -27.6423  -29.4796
+  -14.3017  -15.3907  -16.5234  -17.0468  -17.1234  -15.2617  -11.2391   -6.5473   -2.5390    0.5035
+  -16.9770  -20.7916  -23.5525  -24.8340  -26.2503  -27.5830  -29.2851  -31.9227  -34.3006  -34.8325
+  -13.3840  -15.6860  -16.3454  -15.1449  -11.2094   -6.3316   -2.4289    0.9571    3.6445    4.6639
+  -13.9704  -15.3912  -14.9172  -14.3970  -14.8413  -16.2992  -18.9507  -22.2253  -24.6612  -23.8245
+  -10.3458   -9.6532   -8.4600   -7.6491   -7.2051   -8.0024   -9.8898  -12.1222  -14.3798  -16.5703
+   -9.6469  -10.0640  -11.7585  -14.9789  -19.1360  -22.6704  -24.9468  -25.1654  -22.5236  -17.3469
+   -2.1879   -3.0190   -3.4983   -3.3306   -3.0479   -2.5763   -2.8036   -2.8278   -2.2579   -1.1687
+  -22.5452  -26.6423  -29.9924  -32.8992  -33.1961  -31.6240  -29.7957  -28.6233  -28.8949  -31.4889
+  -11.6062  -12.8558  -14.3472  -15.0068  -15.4516  -15.1861  -13.9264  -12.0117   -8.3083   -2.8206
+   -4.1748   -5.3916   -7.1033   -9.5082  -12.4762  -15.3340  -18.1985  -20.2413  -20.4662  -19.6962
+  -17.5819  -16.6673  -14.2799  -10.1055   -5.0633   -2.1023   -0.2679    0.6801    0.7170    0.3433
+    1.2641    1.3929    2.9116    4.9892    9.1714   13.1256   15.2358   15.6365   13.3712   10.5468
+   -6.2858   -4.0293   -2.2667   -0.8076   -0.6683   -1.3343   -2.2740   -3.7432   -5.3943   -7.0625
+   10.4742    9.0441    8.2264    7.6949    6.7350    6.9254    8.9055   11.1908   13.9037   16.4625
+    0.5648   -0.2686   -0.6014   -0.4549    0.2187    1.6650    3.5457    5.3974    6.6914    6.4321
+   -5.4169   -5.8658   -5.0136   -3.9215   -2.2555   -1.3198   -0.8951   -1.6528   -1.7357   -2.2392
+  -23.3604  -26.8897  -32.3097  -38.5909  -45.3206  -51.2307  -56.5306  -59.9932  -61.0858  -60.3134
+   -3.9651   -2.7833   -1.7990   -0.7034    0.4984    1.6241    3.7821    6.5537    9.3256   11.3782
+  -11.4548  -15.8145  -18.9501  -20.9353  -22.0083  -22.8479  -24.2346  -25.9881  -28.0160  -30.1325
+    0.7964    2.3133    3.6970    3.5896    1.8806    0.2744   -1.1303   -1.5824   -1.2307   -1.1321
+  -16.2656  -19.6492  -20.8985  -20.7292  -19.2030  -16.1891  -13.8245  -11.8488  -11.7196  -13.0609
+    2.9538    1.8917    0.1792   -1.4453   -2.0500   -1.3912    0.7001    4.0880    8.1933   11.7405
+
+dbcont
+procesubjid
+
+procesubjid =
+
+  Columns 1 through 8
+
+        7349        7356        7361        7375        7376        7383        7402        7403
+
+  Columns 9 through 16
+
+        7404        7405        7408        7414        7415        7425        7426        7433
+
+  Columns 17 through 24
+
+        7434        7435        7443        7444        7445        7448        7449        7452
+
+  Columns 25 through 32
+
+        7453        7454        7455        7456        7457        7468        7469        7482
+
+  Columns 33 through 34
+
+        7484        7485
+
+dbquit
+allbinneddata=[allbinneddata myroi];
+allbinneddata=[allbinneddata myroi];
+{Duplicate table variable name: 'layer1'.
+} 
+allbinneddata=[allbinneddata; myroi];
+dbquit
+dbcont
+dbcont
+dbcont
+myroi.bin=mybin;
+{To assign to or create a variable in a table, the number of rows must match the height of the table.
+} 
+length(myroi)
+{Error using <a href="matlab:matlab.internal.language.introspective.errorDocCallback('tabular/length', 'C:\Program Files\MATLAB\R2021b\toolbox\matlab\datatypes\tabular\@tabular\tabular.m', 215)" style="font-weight:bold">tabular/length</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2021b\toolbox\matlab\datatypes\tabular\@tabular\tabular.m',215,0)">line 215</a>)
+Undefined function 'LENGTH' for input arguments of type 'table'.  Use the height, width, or size
+functions instead.
+} 
+height(myroi)
+
+ans =
+
+   272
+
+myroi.bin=string(repmat(mybin,height(myroi)));
+dbcont
+writetable(allbinneddata,[ pathtooutput 'S2_layervalues.csv'])
+
+

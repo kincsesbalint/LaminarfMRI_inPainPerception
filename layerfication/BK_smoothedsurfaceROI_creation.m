@@ -77,8 +77,9 @@ outputpath=[roipath subid '\smootheddata\'];
 interimdatalocation=[roipath subid '\functionalmasks\'];
 
 % smoothedmaskfilenm=[outputpath 'interimdata_smoothedmask_' region '.mat'];
-% smoothedmaskfilenm=[outputpath 'interimdata_smoothedmask.mat'];%this is with 0 threshold 
-smoothedmaskfilenm=[outputpath 'interimdata_smoothedmask_thr1.mat'];%this is with 1 threshold 
+% smoothedmaskfilenm=[outputpath 'interimdata_smoothedmask.mat'];%this is
+% with 0 threshold of the individual smoothed mask
+smoothedmaskfilenm=[outputpath 'interimdata_smoothedmask_thr1.mat'];%this is with 1 threshold of the individual smoothed mask
 
 % modified helper function to load faces and vertex coordinates in a side
 % specific manner(in the original it was concatenated  along the first
