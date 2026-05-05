@@ -1,0 +1,1639 @@
+---
+title: "Laminar fMRI reveals layer‑specific dissociation of sensory and cognitive influences on pain processing"
+subtitle: "Supplementary code - plotting + statistical analysis of behavior and imaging data"
+author: "Balint Kincses"
+date: "2026-04-25"
+output:
+  bookdown::html_document2: 
+    toc: true # table of content true
+    toc_depth: 5  # upto five depths of headings (specified by #, ## and ###)
+---
+
+```{r setup, include=FALSE}
+# knitr::opts_chunk$set(echo = TRUE)
+# library(dplyr)
+
+
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(fig.cap = TRUE)
+
+library(ggplot2)
+library(gridExtra)
+
+library(lme4)
+library(lmerTest)
+library(ggpubr)
+
+library(forcats)
+library(PerformanceAnalytics)
+library(performance)
+library(influence.ME)
+
+library(plyr) 
+library(tidyr)
+
+library(dplyr)
+library(modelbased)
+
+library(reshape2)
+library(emmeans)
+# 
+
+
+```
+
+
+# Summary
+
+This is a document which contains data analysis (including the creation of figures) and statistics for the [Laminar fMRI reveals layer‑specific dissociation of sensory and cognitive influences on pain processing](bioarchivereference) preprint. This document with the code and the corresponding results are provided and uploaded in the projects [github page](https://github.com/kincsesbalint/LaminarfMRI_inPainPerception/tree/main).
+
+The following document contains the code and the repo contains also the used derived data to create the figures. This document with the input data aimed to be standalone.
+
+The following parts are included:
+
+1. The **behavior results** \@ref(behavsumm)
+
+2. The **brain activation results** \@ref(imaging)
+
+
+# Behavior results {#behavsumm}
+
+The experiment conducted in three separate days. In total n=89 participants were invited for the psychopysics session, n=34 were re-invited to the MRI session and n=30 subjects' MRI data were analyzed based on our [preregistered](https://osf.io/68je5) criteria of behavioral analgesia. Briefly, participants were invited into the MRI session when there was a substantial behavior analgesia (VAS~LowCognLoad~ - VAS~HighCognLoad~ > 5 VAS) and behavior analgesia must be present for each subject in the scanner (VAS~LowCognLoad~ - VAS~HighCognLoad~ > 0 VAS).
+
+On a group level, we observed a significant main effect of temperature and cognitive load. Additionally, a significant interaction effect indicated a higher cognitive effect with higher temperature.
+
+See the [manuscript](bioarchivereference) and the its corresponding supplementary for more detail.
+
+```{r function-forbehav, echo=FALSE}
+#load behavioral ratings
+loadratings <- function(pathtodata,trialtyporder=c("hclp","lclp","hchp","lchp")) {
+  
+  mydat.behav<-read.csv(pathtodata,
+                        sep = ",")
+  # One subject data is not complete. The datamatrix includes those 3 trials as trialtyp==0. We get rid off that to easily automatize things.
+  mydat.behav<-mydat.behav[mydat.behav$trialtyp!="0",]
+  mydat.behav[,c(1:3,5,7,9,12,13)]<-lapply(mydat.behav[,c(1:3,5,7,9,12,13)],as.factor)
+  #the factors here are hardcoded and derives from the output of the task
+  levels(mydat.behav$painlvl)<-c("low","high")
+  levels(mydat.behav$cogn_load)<-c("low","high")
+  
+  levels(mydat.behav$trialtyp)<-c("lclp","hclp","lchp","hchp") #c("LoCo_LoPa","HiCo_LoPa", "LoCo_HiPa", "HiCo_HiPa")
+  #order for nice visualization
+  mydat.behav$trialtyp <- ordered(mydat.behav$trialtyp, levels =trialtyporder )
+  
+  levels(mydat.behav$painrating_validity)<-c("invalid","valid")
+  levels(mydat.behav$nbackresponse_validyity)<-c("invalid","valid")
+  levels(mydat.behav$correctans)<-c("incorrect","correct")
+  
+  return(mydat.behav)
+}
+#add the elhid (human readable ID) to the dataset
+addelhidtoratings <-function(mydat.behav,
+                             inscanner=TRUE,
+                             idpseudoidmappingpath="/Users/bala/Documents/layerfMRI/D_data/pseudoid_elhid_mapping.txt"){
+  if (inscanner){
+
+    idpseudoidmapping<-read.csv2(idpseudoidmappingpath,sep = ",",header = FALSE)
+    idpseudoidmapping$V2<-tolower(idpseudoidmapping$V2)
+    
+    
+    for (subjelhid in idpseudoidmapping$V1) {
+      subjpseudoid<-idpseudoidmapping[idpseudoidmapping$V1==subjelhid,"V2"]
+       if (subjpseudoid!='nk6pe5h9j') {
+      # print(subjelhid)
+      #correct for typos in the IDs
+        if (subjpseudoid=='nvgt1vtum') {
+          subjpseudoid<-c('nvgt1vtvm') 
+        } else if (subjpseudoid=='nfcfcgq9f') {
+          subjpseudoid<-c('nfcfcyq9f') 
+        } else if (subjpseudoid=='n9vdwjm5g') {
+          subjpseudoid<-c('n9udwjm5g') 
+        }
+      mydat.behav[mydat.behav$subjID==subjpseudoid,"elhid"]<-subjelhid
+      }
+    }
+    mydat.behav$elhid<-as.factor(mydat.behav$elhid)
+  } else {
+    #simple create a dummy elhid for that case when participants were not invited to the scanner
+      mydat.behav$elhid<-as.factor(mydat.behav$subjID)
+    }
+  return(mydat.behav)
+}
+#calculate behavioral effect of sensory and cogntive effects
+behavioreffects <- function(pathtodata_behav="/users/bala/Documents/layerfMRI/C_paradigm/tasklayerfmri/inscanner_behav.csv",
+                            inscanner=TRUE){
+
+  mydat.behav<-loadratings(pathtodata_behav)
+  if (inscanner){
+#add elhid to the behavior if it is inscanner_behav
+    mydat.behav<-addelhidtoratings(mydat.behav)
+  }
+  else {
+    mydat.behav$elhid<-mydat.behav$subjID
+  }
+  
+  trialtyp_individrating_long <- mydat.behav %>%
+                                group_by(elhid, trialtyp) %>%
+                                summarise(
+                                  meanpainrating = mean(painrating, na.rm = TRUE),
+                                  .groups = "drop"  # Optional: This removes the grouping structure after summarising
+                                )
+  
+  hami <- trialtyp_individrating_long %>%
+                  pivot_wider(
+                    names_from = trialtyp,      # This specifies that the new column names come from the 'trialtyp' variable
+                    values_from = meanpainrating # This determines that the values in those new columns come from 'meanpainrating'
+                  )
+  #calculate average effect of cognitive demand across temperature levels
+  hami$effofcogntask<-((hami$lclp+hami$lchp)-(hami$hclp+hami$hchp))/2
+  #calculate average effect of temperature across cognitive levels
+  hami$effoftemperature<-((hami$hchp+hami$lchp)-(hami$hclp+hami$lclp))/2
+  
+
+  hami$elhid<-as.factor(hami$elhid)
+
+      
+  return(hami)
+}
+#visualize the per condition rating average with within subject SEM
+visualizegroupeffect <-function(mydat,
+                                includedsubj,
+                                imgoutputpath=""
+                                ){
+  mydat<-subset(mydat, elhid %in% includedsubj$elhid)
+  mydat$painlvl <- factor(mydat$painlvl,
+                              levels = c("high","low"))
+  mydat$cogn_load <- factor(mydat$cogn_load,
+                              levels = c("low","high"))
+     
+  
+  individdatapoints <- mydat %>%
+    group_by(elhid,trialtyp,painlvl,cogn_load) %>%
+    summarise(
+      N = n(),
+      avgrating = mean(painrating, na.rm = TRUE),  # Compute mean of adjusted values
+      # sd_adj = sd(adjusted_rating, na.rm = TRUE),  # Compute SD of adjusted values
+      # M = n_distinct(elhid),  # Count number of unique participants (M)
+      # sem_within = (sd_adj / sqrt(N)) * (M / (M - 1)),  # Apply Morey's correction
+      # sd_within = (sd_adj) * (M / (M - 1)),  # Apply Morey's correction
+      .groups = "drop"
+    )
+  
+  individdatapoints$trialtyp <- factor(individdatapoints$trialtyp, levels = c("lchp","hchp","lclp", "hclp")) 
+  individdatapoints <- mutate(individdatapoints,trialtyp = fct_recode(trialtyp,
+                                                                      "LD/HT" = "lchp",
+                                                                      "HD/HT"="hchp",
+                                                                      "LD/LT"="lclp",
+                                                                      "HD/LT"="hclp"))
+#this was tried out but seems to give more confusion, therefore we change to distraction
+                                                                      # "HA/HT" = "lchp",
+                                                                      # "LA/HT"="hchp",
+                                                                      # "HA/LT"="lclp",
+                                                                      # "LA/LT"="hclp"))
+  
+  within_subject <- mydat %>%
+    group_by(elhid,trialtyp,painlvl,cogn_load) %>%
+    mutate(
+      subj_mean = mean(painrating, na.rm = TRUE)  # Compute participant's mean across conditions
+    ) %>%
+    ungroup() %>%
+    group_by(trialtyp,painlvl,cogn_load) %>%
+    summarise(
+      N = n(),
+      avgrating_subj = mean(subj_mean, na.rm = TRUE),
+      # avgrating = mean(painrating, na.rm = TRUE),  # Compute mean of adjusted values
+      sd_adj = sd(subj_mean, na.rm = TRUE),  # Compute SD of adjusted values
+      M = n_distinct(elhid),  # Count number of unique participants (M)
+      sem_within = (sd_adj / sqrt(N)) * (M / (M - 1)),  # Apply Morey's correction
+      sd_within = (sd_adj) * (M / (M - 1)),  # Apply Morey's correction
+      .groups = "drop"
+    )
+
+  
+  within_subject_SEM <- mydat %>%
+    group_by(elhid) %>%
+    mutate(
+      subj_mean = mean(painrating, na.rm = TRUE)  # Compute participant's mean across conditions
+    ) %>%
+    ungroup() %>%
+    mutate(
+      grand_mean = mean(painrating, na.rm = TRUE),  # Compute overall group mean
+      subject_effect = subj_mean - grand_mean,  # Compute subject effect
+      adjusted_rating = painrating - subject_effect  # Remove subject effect from observations
+    ) %>%
+    group_by(trialtyp,painlvl,cogn_load) %>%
+    summarise(
+      N = n(),
+      # avgrating_subj = mean(subj_mean, na.rm = TRUE),
+      avgrating = mean(adjusted_rating, na.rm = TRUE),  # Compute mean of adjusted values
+      sd_adj = sd(adjusted_rating, na.rm = TRUE),  # Compute SD of adjusted values
+      M = n_distinct(elhid),  # Count number of unique participants (M)
+      sem_within = (sd_adj / sqrt(N)) * (M / (M - 1)),  # Apply Morey's correction
+      sd_within = (sd_adj) * (M / (M - 1)),  # Apply Morey's correction
+      .groups = "drop"
+    )
+
+  # Print result
+  print(within_subject_SEM)
+  print(within_subject)
+  # print(grouplvl_behavdata)
+  #relevel so it gives a nice figure:
+  within_subject_SEM$trialtyp <- factor(within_subject_SEM$trialtyp, levels = c("lchp","hchp","lclp", "hclp"))
+  within_subject_SEM <- mutate(within_subject_SEM,trialtyp = fct_recode(trialtyp,
+                                                                      "LD/HT" = "lchp",
+                                                                      "HD/HT"="hchp",
+                                                                      "LD/LT"="lclp",
+                                                                      "HD/LT"="hclp"))
+
+  p<-ggplot(within_subject_SEM, aes(x=painlvl, y=avgrating, fill=trialtyp,group=trialtyp)) +
+    # geom_text(aes(x=painlvl,label = round(painrating,2)),nudge_y = 10)+
+
+    geom_bar(stat="identity",
+             position=position_dodge()) + #
+    geom_errorbar(aes(ymin=avgrating-sem_within, ymax=avgrating+sem_within),linewidth = 1.2, width=.1,
+                   position=position_dodge(.9))+
+    scale_fill_manual(values=c('orangered4',
+                               'orangered1',
+                               'royalblue4',
+                               'skyblue1'),name="Conditions")+
+    geom_point(data =individdatapoints, aes(x=painlvl,y=avgrating,group=trialtyp),position = position_jitterdodge(),alpha = 0.3) +
+
+    # scale_fill_brewer(palette="blue",name="Conditions") +
+    # scale_colour_discrete(name="Cognitive load", labels=c("low","high"),type=c('red','green'))+
+    geom_text(aes(label=round(avgrating,2)), vjust=-2, color="black",
+    position = position_dodge(0.9), size=3.5)+
+    annotate("text", x = 1, y = 75, label = "*", size = 22) + # Between 1st and 2nd bars
+    annotate("text", x = 2, y = 60, label = "*", size = 22) + # Between 3rd and 4th bars
+    annotate("text", x = 1.5, y = 80, label = "*", size = 22) + # Between
+    labs(x="Temperature level",y="Pain rating")+
+    ylim(0,90)+
+    theme_classic()+
+    theme(axis.text = element_text(size=22),
+          axis.title = element_text(size = 16),
+
+          legend.text = element_text(size = 22),     # Legend labels
+          legend.title = element_text(size = 16),
+          legend.position = "bottom")
+
+    if (imgoutputpath != "") {  # Check if the argument is NOT empty
+      outputflnm=file.path(imgoutputpath)
+      print(outputflnm)
+      ggsave(outputflnm,p, width = 8, height = 6, dpi = 300)
+    } else {
+      message("Image not saved!")  # Default behavior
+    }
+
+  
+    print(p)
+    return(p)
+}
+```
+
+## Included subjects (n=30) in the main analysis  {.tabset}
+
+The result of the total number of participants based on our preregistered selection criteria.
+
+### Plots (n=30)
+
+```{r figure-behav_grpratingn30, fig.cap="The behavior analgesia in each condition (n=30)", fig.width=10,fig.height=11,echo=FALSE}
+
+pathtodata_behav="/Users/bala/Documents/layerfMRI/C_paradigm/tasklayerfmri/inscanner_behav.csv"
+behaveff<-behavioreffects(pathtodata_behav)
+#preregistered criteria of cognitive task which used for visualization and stats below
+includedsubj_n30<-behaveff[behaveff$effofcogntask>0,"elhid"]
+
+mydat.behav<-loadratings(pathtodata_behav)
+
+mydat.behav<-addelhidtoratings(mydat.behav)
+
+
+behavplotoutputpath<-""
+n30img<-visualizegroupeffect(mydat.behav,includedsubj_n30,behavplotoutputpath) #
+
+```
+### Stat(n=30)
+
+```{r stat-behaviorresult_n30}
+mydat.behav_30subj<-subset(mydat.behav, elhid %in% includedsubj_n30$elhid)
+behavmodel_null<-lmer(painrating~cogn_load+painlvl+(1|subjID),data=mydat.behav_30subj)
+behavmodel<-lmer(painrating~cogn_load*painlvl+(1|subjID),data=mydat.behav_30subj)
+anova(behavmodel_null,behavmodel)
+summary(behavmodel)
+print(parameters::model_parameters(behavmodel),show_formula=TRUE)
+
+print(r2(behavmodel))
+
+print(icc(behavmodel))
+```
+
+
+## All subjects participated in the MRI (n=34) {.tabset}
+
+The result of the participants participated in the MRI session.
+
+### Plots(n=34)
+
+```{r figure-behav_grpratingn34, fig.cap="The behavior analgesia in each condition (n=34)", fig.width=10,fig.height=11,echo=FALSE}
+pathtodata_behav="/Users/bala/Documents/layerfMRI/C_paradigm/tasklayerfmri/inscanner_behav.csv"
+behaveff<-behavioreffects(pathtodata_behav)
+#dummy threshold for keeping all subjects
+includedsubj<-behaveff[behaveff$effofcogntask>-99,"elhid"]
+
+mydat.behav<-loadratings(pathtodata_behav)
+
+mydat.behav<-addelhidtoratings(mydat.behav)
+
+behavplotoutputpath<-""
+n34img<-visualizegroupeffect(mydat.behav,includedsubj,behavplotoutputpath) #
+
+```
+### Stat (n=34)
+```{r stat-behaviorresult_n34}
+mydat.behav_34subj<-subset(mydat.behav, elhid %in% includedsubj$elhid)
+behavmodel<-lmer(painrating~cogn_load*painlvl+(1|subjID),data=mydat.behav_34subj)
+summary(behavmodel)
+parameters::model_parameters(behavmodel)
+
+print(r2(behavmodel))
+
+print(icc(behavmodel))
+```
+
+
+## All subjects (n=89) {.tabset}
+
+The result of all participants in the study (out of scanner/psychophysics session).
+
+### Plots(n=89)
+```{r figure-behav_grpratingn89,fig.cap="The behavior analgesia in each condition (n=89)", fig.width=10,fig.height=11,echo=FALSE}
+pathtodata_behav="/Users/bala/Documents/layerfMRI/C_paradigm/tasklayerfmri/outofscanner_behav.csv"
+behaveff<-behavioreffects(pathtodata_behav,FALSE)
+
+includedsubj<-behaveff[behaveff$effofcogntask>-99,"elhid"]
+
+mydat.behav<-loadratings(pathtodata_behav)
+
+mydat.behav<-addelhidtoratings(mydat.behav,FALSE)
+
+behavplotoutputpath<-""
+n89img<-visualizegroupeffect(mydat.behav,includedsubj,behavplotoutputpath) #
+
+```
+### Stat (n=89)
+```{r stat-behaviorresult_n89}
+mydat.behav_89subj<-subset(mydat.behav, elhid %in% includedsubj$elhid)
+behavmodel<-lmer(painrating~cogn_load*painlvl+(1|subjID),data=mydat.behav_89subj)
+summary(behavmodel)
+parameters::model_parameters(behavmodel)
+
+print(r2(behavmodel))
+
+print(icc(behavmodel))
+```
+
+## Three set of participants behavior result in one figure
+
+```{r figure-allgrouplvlimgtogether,fig.cap="The three figures above are concatenated",fig.width=13,fig.height=26}
+
+n30img<-n30img + labs(title = "n=30 subjects (main analysis)")
+n34img<-n34img + labs(title = "n=34 subjects (in scanner participants)")
+n89img<-n89img + labs(title = "n=89 subjects (all subjects)")
+p<-grid.arrange(n30img, n34img,n89img, ncol = 1)
+# outputflnm<-""
+# ggsave(outputflnm,p, width = 8, height = 16, dpi = 300)
+
+```
+
+# Imaging results {#imaging}
+
+
+1. Activation in the functional ROIs irrespective to layers \@ref(nolayerfigures)
+
+2. Activation in the functional ROIs across cortex/laminar depth \@ref(laminardependency)
+
+3. Correlation between behavior analgesia and relative agranular involvement \@ref(correlation)
+
+4. Sensitivity analysis and supplementary analysis \@ref(supplanalys)
+
+
+Within the individual functional ROIs, the cortical depth was sampled from the minimally preprocessed high-resolution fMRI data (registered in individual anatomical space) and 1st level GLM was fitted on the sampled timeseries. It resulted in parameters estimates(ß) for each condition. Contrast estimates of bottom-up (main effect of temperature) and top-down process (main effect of cognitive demand) were derived for each individual in each depth of the cortex.
+
+
+See the [manuscript](bioarchivereference) and the its corresponding supplementary for more detail regarding the analysis pipeline.
+
+
+## Brain activation averaged across of layers {#nolayerfigures .tabset}
+
+```{r functions-forimaging_nolayer, echo=FALSE}
+loaddata<-function(roi,
+                   nlayer=20,
+                   pathtolayerdata='/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/percondition/'){
+  
+  layerdatafilepath<-file.path(pathtolayerdata,dir(pathtolayerdata)[grepl(roi,dir(pathtolayerdata))])
+ 
+  print(paste('the file what we work with:',layerdatafilepath))
+  layer_data<-read.csv2(layerdatafilepath,sep = ",",dec = ".",header = TRUE)
+
+
+  layerdata_long <- layer_data %>%
+    pivot_longer(
+      cols = -c(process, side, subjid),
+      names_to = "layer",
+      values_to = "beta"
+    ) %>% mutate(process = recode(process,
+                        HCHP = "HD/HT",
+                        HCLP = "HD/LT",
+                        LCHP = "LD/HT",
+                        LCLP ="LD/LT"))
+                    
+
+  #adding additional layer variable as a continuous variable
+  layerdata_long$layeridx<-as.numeric(substr(layerdata_long$layer,6,7))
+  
+  
+  layerdata_long[,c("process","side","subjid")]<-lapply(layerdata_long[,c("process","side","subjid")],as.factor)
+  
+  layerdata_long[grepl("HD",layerdata_long$process),"cognition"]<-factor("highcognition",levels = c('highcognition','lowcognition'))
+  layerdata_long[grepl("LD",layerdata_long$process),"cognition"]<-factor("lowcognition",levels = c('highcognition','lowcognition'))
+  layerdata_long[grepl("HT",layerdata_long$process),"temp"]<-factor("hightemp",levels = c('hightemp','lowtemp'))
+  layerdata_long[grepl("LT",layerdata_long$process),"temp"]<-factor("lowtemp",levels = c('hightemp','lowtemp'))
+  
+  layerdata_long$roi<-as.factor(roi)
+  
+  if (nlayer==20) {
+    print('we go with the original 20 layers')
+    layerdata_long$layer<-factor(layerdata_long$layer,levels =  paste0("layer", 1:20))
+  } else if (nlayer==3){
+    print('We averaged across theoretical functionally different layers:deep,middle, superficial')
+   
+    layerdata_long[layerdata_long$layeridx %in% c(1:7),'layernm']<-factor('Deep (1-7)',levels = c('Deep (1-7)','Middle (8-13)','Superficial (14-20)'))
+    layerdata_long[layerdata_long$layeridx %in% c(8:13),'layernm']<-factor('Middle (8-13)',levels = c('Deep (1-7)','Middle (8-13)','Superficial (14-20)'))
+    layerdata_long[layerdata_long$layeridx %in% c(14:20),'layernm']<-factor('Superficial (14-20)',levels = c('Deep (1-7)','Middle (8-13)','Superficial (14-20)'))
+    
+    layerdata_long <- layerdata_long %>%
+  group_by(process, layernm,subjid,side) %>%
+  summarise(
+    N = n(),
+    avgbeta = mean(beta, na.rm = TRUE),
+    sd = sd(beta, na.rm = TRUE),
+    se = sd / sqrt(N),
+    .groups = "drop"  # Prevents warnings about grouping
+  )  %>%
+      rename(layeridx = layernm,
+             beta = avgbeta)
+    
+    # layerdata_long <- layerdata_long %>% 
+      
+    
+  }
+  # print(head(layerdata_long)) 
+  return(layerdata_long)
+}
+
+visualize_effectoftemp<-function(mylongdata,myroi,myoutputpath=""){
+  contrasts_df <- mylongdata %>%
+    mutate(process = as.character(process)) %>%
+    group_by(subjid, side) %>%
+    summarise(
+      HighTmp = (beta[process == 'HD/HT'] + beta[process == 'LD/HT'])/2,
+      LowTmp = (beta[process == 'HD/LT'] + beta[process == 'LD/LT'])/2,
+    .groups = "drop") 
+
+  derivedstuff <- contrasts_df %>%
+  pivot_longer(
+    cols = -c(subjid, side),
+    names_to = "process",
+    values_to = "beta"
+  )
+  
+  dataforfig<- ddply(derivedstuff, c("process","side"), summarise,
+                   N    = length(beta),
+                   avgbeta = mean(beta,na.rm=T),
+                   sd   = sd(beta,na.rm=T),
+                   se   = sd / sqrt(N)) 
+  p<-ggplot(dataforfig,aes(process,avgbeta,fill=process))+
+    geom_bar(stat="identity",  
+             position=position_dodge()) +
+    geom_errorbar(aes(ymin=avgbeta-se, ymax=avgbeta+se), width=.2,
+                   position=position_dodge(.9))+
+    theme_minimal()+
+    theme(axis.text.x = element_text(size = 18,angle = 30, vjust = 0.5, hjust=1),
+          axis.title.y = element_blank(),
+          axis.title.x = element_blank(),
+          strip.text = element_text(size = 26),
+          legend.text = element_text(size = 22),
+          legend.title = element_text(size = 26),
+          plot.title = element_text(size=26),
+          legend.position = "bottom",
+          plot.background = element_rect(fill = "white", color = NA),  # Set plot background to white
+          panel.background = element_rect(fill = "white", color = NA))+
+    scale_y_continuous(
+      breaks = c(0)  # Only show the tick at 0 on the y-axis
+    )+
+    scale_fill_manual(values=c('orangered2','skyblue3'),labels = c("HT", "LT"))+
+    facet_wrap(.~side)+
+    ggtitle(paste('The effect of temperature in ',myroi))
+  
+   if (myoutputpath != ""){
+      outputflnm=file.path(myoutputpath,paste0(myroi, "_pain.png"))
+    # print(outputflnm)
+     ggsave(outputflnm,p, width = 8, height = 6, dpi = 300)
+      message("Image saved to: ", outputflnm)
+    } else {
+      # No path specified, return a message
+      message("No save path provided. Image not saved.")
+    }
+  
+  print(p)
+}
+
+visualize_effectofcogn<-function(mylongdata,myroi,myoutputpath=""){
+  contrasts_df <- mylongdata %>%
+    mutate(process = as.character(process)) %>%
+    group_by(subjid, side) %>%
+    summarise(
+      LowDistr = (beta[process == 'LD/LT'] + beta[process == 'LD/HT'])/2,
+      HighDistr = (beta[process == 'HD/LT'] + beta[process == 'HD/HT'])/2
+    ) %>%
+    ungroup()
+
+  derivedstuff <- contrasts_df %>%
+  pivot_longer(
+    cols = -c(subjid, side),
+    names_to = "process",
+    values_to = "beta"
+  )
+  
+  derivedstuff <- derivedstuff %>%
+    mutate(process = factor(process, levels = c( 'LowDistr','HighDistr'))) 
+  dataforfig<- ddply(derivedstuff, c("process","side"), summarise,
+                   N    = length(beta),
+                   avgbeta = mean(beta,na.rm=T),
+                   sd   = sd(beta,na.rm=T),
+                   se   = sd / sqrt(N)) 
+  p<-ggplot(dataforfig,aes(process,avgbeta,fill=process))+
+    geom_bar(stat="identity",  
+             position=position_dodge()) +
+    geom_errorbar(aes(ymin=avgbeta-se, ymax=avgbeta+se), width=.2,
+                   position=position_dodge(.9))+
+    theme_minimal()+
+    theme(axis.text.x = element_text(size = 18,angle = 30, vjust = 0.5, hjust=1),
+          axis.title.y = element_blank(),
+          axis.title.x = element_blank(),
+          # axis.ticks.x = element_text(size = 18),
+          strip.text = element_text(size = 26),
+          legend.text = element_text(size = 22),
+          legend.title = element_text(size = 26),
+          plot.title = element_text(size=26),
+          legend.position = "bottom",
+          plot.background = element_rect(fill = "white", color = NA),  # Set plot background to white
+          panel.background = element_rect(fill = "white", color = NA))+
+    scale_y_continuous(
+      breaks = c(0)  # Only show the tick at 0 on the y-axis
+    )+
+    scale_fill_manual(values=c('paleturquoise','turquoise4'),labels = c("LD", "HD"))+
+    facet_wrap(.~side)+
+    ggtitle(paste('The effect of distraction in ',myroi))
+  
+   if (myoutputpath != ""){
+      outputflnm=file.path(myoutputpath,paste0(myroi, "_cognition.png"))
+    # print(outputflnm)
+     ggsave(outputflnm,p, width = 8, height = 6, dpi = 300)
+      message("Image saved to: ", outputflnm)
+    } else {
+      # No path specified, return a message
+      message("No save path provided. Image not saved.")
+    }
+
+  print(p)
+}
+
+visualize_allconditions<-function(mylongdata,myroi,myoutputpath=""){
+  # dataforfig<- ddply(mylongdata, c("process","pain","cognition","side"), summarise,
+  dataforfig<- ddply(mylongdata, c("process","temp","cognition","side"), summarise,
+                 N    = length(beta),
+                 avgbeta = mean(beta,na.rm=T),
+                 sd   = sd(beta,na.rm=T),
+                 se   = sd / sqrt(N))
+
+  dataforfig <- dataforfig %>%
+    mutate(process = factor(process, levels = c( 'LD/LT','HD/LT','LD/HT','HD/HT')),
+           cognition = factor(cognition,levels = c( "highcognition","lowcognition")))
+
+  p<-ggplot(dataforfig,aes(temp,avgbeta,fill=process))+
+    geom_bar(stat="identity",  
+             position=position_dodge()) +
+    geom_errorbar(aes(ymin=avgbeta-se, ymax=avgbeta+se), width=.2,
+                   position=position_dodge(.9))+
+    scale_fill_manual(values=c('royalblue4','skyblue1','orangered4','orangered1'),name="Conditions")+
+    theme_minimal()+
+    theme(axis.text.x = element_text(size = 18,angle = 30, vjust = 0.5, hjust=1),
+          axis.title.y = element_blank(),
+          axis.title.x = element_blank(),
+          strip.text = element_text(size = 26),
+          legend.text = element_text(size = 22),
+          legend.title = element_text(size = 26),
+          plot.title = element_text(size=26),
+          legend.position = "bottom",
+          plot.background = element_rect(fill = "white", color = NA),  # Set plot background to white
+            panel.background = element_rect(fill = "white", color = NA))+
+    scale_y_continuous(
+      breaks = c(0)  # Only show the tick at 0 on the y-axis
+    )+
+    facet_wrap(.~side)+
+    ggtitle(paste('The four conditions separately in ',myroi))
+    if (myoutputpath != ""){
+      outputflnm=file.path(myoutputpath,paste0(myroi, "_allcondition.png"))
+    # print(outputflnm)
+     ggsave(outputflnm,p, width = 8, height = 6, dpi = 300)
+      message("Image saved to: ", outputflnm)
+    } else {
+      # No path specified, return a message
+      message("No save path provided. Image not saved.")
+    }
+    # Save the last displayed plot as a PNG
+   
+    print(p)
+}
+
+
+
+```
+
+For each ROI (S1,S2, pIns) and side, ß estimates of each condition and main effect contrasts were visualized. The vertices within the ROIs were selected to be sensitive:
+
+- **MAIN effects** vertices: vertex pairs selected based on a response (activation to) temperature and cognitive demand effect, that is to have higher activity with higher temperature and higher activity in the low cognitive demand condition. --> the figure belows represent the check of this assumption. Note that no statistical test was run on this average layer activity, as the selection of the functional ROI was based on similar(but not the same!) data, that is, all comparison would show a  significant effect.
+
+### S1_activation
+
+```{r fig-S1_nolayer, fig.width=10,fig.height=11, fig.cap="S1 activation to each condition averaged across layers", echo=FALSE}
+inputpath="/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/percondition/" 
+outputpath<-""
+
+mylist<-list(roi=c('S1'))
+
+for (myroi in mylist$roi) {
+
+  mylongdata<-loaddata(myroi,pathtolayerdata = inputpath)
+  
+  mylongdata<-subset(mylongdata, subjid %in% includedsubj_n30$elhid)
+ 
+  visualize_allconditions(mylongdata,myroi,outputpath)
+  visualize_effectoftemp(mylongdata,myroi,outputpath)
+  # 
+  visualize_effectofcogn(mylongdata,myroi,outputpath) #,outputpath
+  
+
+}
+
+
+```
+
+### S2_activation
+
+```{r fig-S2_nolayer, fig.width=10,fig.height=11,fig.cap="S2 activation to each condition averaged across layers",echo=FALSE}
+
+
+inputpath="/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/percondition/"
+outputpath=""
+mylist<-list(roi=c('S2'))
+
+for (myroi in mylist$roi) {
+
+  mylongdata<-loaddata(myroi,pathtolayerdata = inputpath)
+  # includedsubj_n30 - is defined in the figure-behav_grpratingn30 chunk: 
+  mylongdata<-subset(mylongdata, subjid %in% includedsubj_n30$elhid)
+  
+  visualize_allconditions(mylongdata,myroi,outputpath)
+  visualize_effectoftemp(mylongdata,myroi,outputpath)
+
+  visualize_effectofcogn(mylongdata,myroi,outputpath) #,outputpath
+
+}
+
+
+```
+
+### pIns_activaiton
+
+```{r fig-pIns_nolayer, fig.width=10,fig.height=11,fig.cap="pIns activation to each condition averaged across layers",echo=FALSE}
+
+inputpath="/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/percondition/"
+outputpath=""
+mylist<-list(roi=c('pIns'))
+
+for (myroi in mylist$roi) {
+
+  mylongdata<-loaddata(myroi,pathtolayerdata = inputpath)
+  # includedsubj_n30 - is defined in the figure-behav_grpratingn30 chunk: 
+  mylongdata<-subset(mylongdata, subjid %in% includedsubj_n30$elhid)
+  # print(head(mylongdata))
+  visualize_allconditions(mylongdata,myroi,outputpath)
+  visualize_effectoftemp(mylongdata,myroi,outputpath)
+
+  visualize_effectofcogn(mylongdata,myroi,outputpath) #,outputpath
+  
+
+}
+
+
+```
+
+
+## Brain activation as a function of layers {#laminardependency}
+
+For each ROI (S1,S2, pIns) and side, the effect of BU (main effect of temperature) and TD (main effect of cogntiive load) were calculated at each depth of the cortex. The pattern difference between the two processes was the main focus in this study\@ref(laminardependency). The interaction between processes was tested statistically \@ref(laminarstat). Additionally, each condition and the nociceptive effect (HT-LT) in each attentional level were also visualized.
+
+
+```{r functions-forimaging_layer, echo=FALSE}
+
+visualize_botheffect_perlayer<-function(mylongdata,myoutputpath=""){
+  myroi<-unique(mylongdata$roi)
+  print(myroi)
+  # msg<-sprintf("The number of subject from which we do the left figure: %d",length(unique(mylongdata[mylongdata$side=='left','subjid'])))
+  # print(msg)
+  # msg<-sprintf("The number of subject from which we do the right figure: %d",length(unique(mylongdata[mylongdata$side=='right','subjid'])))
+  # print(msg)
+  
+    
+  maki<-visdata %>%
+     group_by(side) %>%
+     summarise(n_subjects = n_distinct(subjid))
+  print("The number of subject from which we do the figure:")
+  print(maki)
+  
+  contrasts_df <- mylongdata %>%
+    mutate(process = as.character(process)) %>%
+    group_by(subjid, side,layeridx) %>% 
+    summarise(
+      pain = ((beta[process == 'LD/HT'] + beta[process == 'HD/HT'])-(beta[process == 'HD/LT'] + beta[process == 'LD/LT']))/2,
+      cogn = ((beta[process == 'LD/HT'] + beta[process == 'LD/LT'])-(beta[process == 'HD/HT'] + beta[process == 'HD/LT']))/2,
+          .groups = "drop") %>%
+    ungroup()
+
+  # print(head(contrasts_df))
+  derivedstuff <- contrasts_df %>%
+    pivot_longer(
+      cols = -c(subjid, side, layeridx),  # Keep these columns intact
+      names_to = "process",             # This will create a new column called "process" for the variable names
+      values_to = "beta"                # This will create a new column called "beta" for the values
+    )
+  #this is a calculation of within subject SEM calculation
+  dataforfig <- derivedstuff %>%
+    group_by(subjid) %>%
+    mutate(
+      subj_mean = mean(beta, na.rm = TRUE)  # Compute participant's mean across conditions
+    ) %>%
+    ungroup() %>%
+    mutate(
+      grand_mean = mean(beta, na.rm = TRUE),  # Compute overall group mean
+      subject_effect = subj_mean - grand_mean,  # Compute subject effect
+      adjusted_beta = beta - subject_effect  # Remove subject effect from observations
+    ) %>%
+    group_by(process,layeridx,side) %>%
+    summarise(
+      N = n(),
+      avgorigbeta=mean(beta, na.rm = TRUE),
+      avgbeta = mean(adjusted_beta, na.rm = TRUE),  # Compute mean of adjusted values
+      sd_adj = sd(adjusted_beta, na.rm = TRUE),  # Compute SD of adjusted values
+      M = n_distinct(subjid),  # Count number of unique participants (M)
+      sem_within = (sd_adj / sqrt(N)) * (M / (M - 1)),  # Apply Morey's correction
+      sd_within = (sd_adj) * (M / (M - 1)),  # Apply Morey's correction
+      .groups = "drop"
+    ) %>%
+    mutate(process = factor(process,levels=c("pain","cogn"))) %>%
+    mutate(process = recode(process,
+                           `pain` = "BU",  # Use backticks for levels that are not standard
+                           `cogn` = "TD"))
+
+
+
+
+    print(head(dataforfig))
+      p<-ggplot(dataforfig,aes(layeridx,avgbeta,group=process,colour=process))+ #avgbeta
+        geom_point()+
+        geom_line(size=2)+
+        geom_errorbar(aes(ymin = avgbeta - sem_within, ymax = avgbeta + sem_within), #avgbeta
+                      width = 0.2, linewidth = 1,
+                      position = position_dodge(width = 0.1))+
+        theme_minimal()+
+        theme(#axis.text = element_text(size=22),
+              # axis.title = element_text(size = 20),
+              axis.title = element_blank(),
+              axis.text.x = element_blank(),   # Remove x-axis text axis.text.x = element_text(angle = 30, vjust = 0.5, hjust=1),
+
+              strip.text = element_text(size = 26),
+              # legend.text = element_text(size = 22),
+              # legend.text = element_blank(),
+              # legend.title = element_text(size = 16),
+              legend.title = element_blank(),
+              # legend.position = "none",
+              legend.position = "bottom",
+              plot.background = element_rect(fill = "white", color = NA),  # Set plot background to white
+              panel.background = element_rect(fill = "white", color = NA))+
+      facet_wrap(.~side)+
+    # ggtitle(paste('The two process laminar profile in ',myroi))+
+        labs(x = "Cortical depth",
+             y = "Contrast estimates")+
+      scale_y_continuous(
+        breaks = c(0,20,60)  # Only show the tick at 0 on the y-axis
+      )
+
+    if (myoutputpath != ""){
+      outputflnm=file.path(myoutputpath,paste0(myroi, "_botheffects_perlayer.png"))
+    # print(outputflnm)
+     ggsave(outputflnm,p, width = 14, height = 6, dpi = 300)
+      message("Image saved to: ", outputflnm)
+    } else {
+      # No path specified, return a message
+      print("No save path provided. Image not saved.")
+    }
+
+
+    print(p)
+    return(derivedstuff)
+}
+
+perconditionvis<-function(mylongdata,myroi,myoutputpath=""){
+  grouplvl_layerdata_cond<- ddply(mylongdata, c("process","layer","side"), summarise,
+                 N    = length(beta),
+                 avgbeta = mean(beta,na.rm=T),
+                 sd   = sd(beta,na.rm=T),
+                 se   = sd / sqrt(N)
+                 )
+  grouplvl_layerdata_cond <- grouplvl_layerdata_cond %>%
+    mutate(process = factor(process, levels = c( 'LD/LT','HD/LT','LD/HT','HD/HT'))) # 
+  p<-ggplot(grouplvl_layerdata_cond,aes(layer,avgbeta,group=process,colour=process))+ #
+    geom_point(stat = "identity", alpha = 0.8) + # Bar plot
+    geom_line(linewidth =4)+
+    geom_errorbar(aes(ymin = avgbeta - se, ymax = avgbeta + se),
+                  width = 0.2, color = "black", linewidth = 1.5)+
+    theme_minimal()+
+    theme(#axis.text.x = element_text(angle = 30, vjust = 0.5, hjust=1),
+
+          axis.text.x = element_blank(),
+          #axis.text.y = element_blank(),
+          axis.title.x = element_blank(),
+          axis.text.y = element_text(size = 26),
+          axis.title.y = element_blank(),
+          strip.text = element_text(size = 26),
+          legend.text = element_text(size = 22),
+          legend.title = element_text(size = 26),
+          legend.position = "bottom",
+          plot.title = element_text(size=26),
+          plot.background = element_rect(fill = "white", color = NA),  # Set plot background to white
+          panel.background = element_rect(fill = "white", color = NA))+
+    # labs(color = "conditions", fill = "conditions")+
+    scale_colour_manual(values=c('royalblue4','skyblue1','orangered4','orangered1'),name="Conditions")+
+    ggtitle(myroi)+
+    facet_grid(.~side)
+
+  if (myoutputpath != ""){
+    outputflnm=file.path(myoutputpath,paste0(myroi, "_percondition_perlayer.png"))
+  # print(outputflnm)
+   ggsave(outputflnm,p, width = 16, height = 9, dpi = 300)
+    message("Image saved to: ", outputflnm)
+  } else {
+    # No path specified, return a message
+    message("No save path provided. Image not saved.")
+  }
+
+  print(p)
+}
+
+
+modelfitting_2way <- function(myroi,
+                              modeltype,
+                              contrasttype='nociception',
+                              mylist=list(side=c('left','right')),
+                         inclsubj=includedsubj_n30,
+                         mydata='/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/percondition/',
+                         myoutputpath='') {
+
+  mylongdata<-loaddata(myroi,pathtolayerdata =mydata)
+  if (contrasttype=='nociception'){
+  contrasts_df <- mylongdata %>%
+    mutate(process = as.character(process)) %>%
+    group_by(subjid, side,layer,layeridx) %>%
+    summarise(
+      nociceptioninHA = beta[process == 'HAHT'] - beta[process == 'HALT'],
+      nociceptioninLA = beta[process == 'LAHT'] - beta[process == 'LALT']
+    ) %>%
+    ungroup()
+  } else if (contrasttype=='maineff') {
+      contrasts_df <- mylongdata %>%
+        mutate(process = as.character(process)) %>%
+        group_by(subjid, side,layer, layeridx) %>%
+        summarise(
+          nociception = ((beta[process == 'LD/HT'] + beta[process == 'HD/HT'])-(beta[process == 'HD/LT'] + beta[process == 'LD/LT']))/2,
+          distraction = ((beta[process == 'LD/HT'] + beta[process == 'LD/LT'])-(beta[process == 'HD/HT'] + beta[process == 'HD/LT']))/2,
+              .groups = "drop") %>%
+        ungroup()
+  }
+
+
+  derivedstuff<-melt(contrasts_df, id.vars=c("subjid", "side","layer","layeridx"),
+        variable.name="process",
+      value.name="beta")
+  # print(head(derivedstuff))
+  mymodels<-c()
+  for (myside in mylist$side){
+    cat(paste(rep("-", 50), collapse = ""), "\n")
+    msg <- sprintf("The %s region and %s side", myroi, myside)
+    print(msg)
+
+
+    moddata<-subset(derivedstuff, subjid %in% inclsubj$elhid & side %in% myside)
+
+    moddata['layeridx_scaled'] <- scale(moddata$layeridx)
+    print('-----')
+    print('This is the data frame header which we use for modelling:')
+    print(head(moddata))
+    if (modeltype== 'factor') {
+      modell<-lmer(beta~process*layer+(1|subjid),data=moddata)
+
+      coefs <- summary(modell)$coefficients
+      int_rows <- grepl("^process[^:]*:layer", rownames(coefs))
+      p_int <- coefs[int_rows, "Pr(>|t|)"]
+      corrected_p_vals <- p.adjust(p_int, method = "BH")  # Adjust p-values using FDR method
+      print(corrected_p_vals)
+      #this was corrected for all test, however, it would make more sense to only focus on the interaction family,as we want to make only 20 tests, and not more...
+      # p_vals <- summary(modell)$coefficients[, "Pr(>|t|)"]  # Extract p-values from the model summary
+      # corrected_p_vals <- p.adjust(p_vals, method = "BH")  # Adjust p-values using FDR method
+      significant_indices <- corrected_p_vals < 0.05
+      significant_p_vals <- corrected_p_vals[significant_indices]
+      significant_names <- names(corrected_p_vals)[significant_indices]
+      cat(paste(rep("-", 50), collapse = ""), "\n")
+      print('the signficant factor levels from our model after FDR correction:')
+      print(significant_names)
+
+      modelparams<-parameters::model_parameters(modell)
+      print(modelparams)
+      tableforsave<-modelparams[1:40,1:9]
+      tableforsave$p_fdr<-NA
+      tableforsave[int_rows,"p_fdr"]<-corrected_p_vals
+      # tableforsave$p_fdr<-corrected_p_vals
+      numeric_cols <- sapply(tableforsave, is.numeric)
+      tableforsave[numeric_cols] <- lapply(tableforsave[numeric_cols], function(x) round(x, 2))
+      tableforsave[c('p','p_fdr')] <- lapply(tableforsave[c('p','p_fdr')], function(x) {
+              x <- as.character(x)
+              x[x == "0"] <- "<.001"
+              return(x)
+          })
+      print(tableforsave)
+
+
+    } else if (modeltype=='continouslin') {
+      modell<-lmer(beta~process*layeridx_scaled+(1|subjid),data=moddata)
+      modelparams<-parameters::model_parameters(modell)
+      tableforsave<-modelparams[1:6,1:9]
+      numeric_cols <- sapply(tableforsave, is.numeric)
+      tableforsave[numeric_cols] <- lapply(tableforsave[numeric_cols], function(x) round(x, 2))
+      tableforsave[c('p')] <- lapply(tableforsave[c('p')], function(x) {
+              x <- as.character(x)
+              x[x == "0"] <- "<.001"
+              return(x)
+          })
+    } else if (modeltype=='continousec') {
+      modell<-lmer(beta~process*(layeridx_scaled+I(layeridx_scaled^2))+(1|subjid),data=moddata)
+      modelparams<-parameters::model_parameters(modell)
+      tableforsave<-modelparams[1:6,1:9]
+      numeric_cols <- sapply(tableforsave, is.numeric)
+      tableforsave[numeric_cols] <- lapply(tableforsave[numeric_cols], function(x) round(x, 2))
+      tableforsave[c('p')] <- lapply(tableforsave[c('p')], function(x) {
+              x <- as.character(x)
+              x[x == "0"] <- "<.001"
+              return(x)
+          })
+
+    }
+
+    print(summary(modell))
+    print(anova(modell))
+
+
+      if (myoutputpath != ""){
+        estimatefilnm=file.path(myoutputpath,modeltype,paste0(myroi,'_',myside),paste0(myroi,'_',myside,'_', "robustmodelestimation.csv"))
+        output_dir <- dirname(estimatefilnm)
+        if (!dir.exists(output_dir)) {
+          dir.create(output_dir, recursive = TRUE)
+        }
+        write.csv(tableforsave, file = estimatefilnm, row.names = FALSE)
+        message("Image saved to: ", estimatefilnm)
+    } else {
+      # No path specified, return a message
+      print("No save path provided. Image not saved.")
+    }
+    mymodels[[myside]]<-modell
+  }
+  return(mymodels)
+}
+
+modelfitting_comparison <- function(myroi,
+                              mylist=list(side=c('left','right')),
+                         inclsubj=includedsubj_n30,
+                         mydata='/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/percondition/',
+                         myoutputpath='') {
+
+    mylongdata<-loaddata(myroi,pathtolayerdata =mydata)
+
+    contrasts_df <- mylongdata %>%
+      mutate(process = as.character(process)) %>%
+      group_by(subjid, side,layer, layeridx) %>%
+      summarise(
+        nociception = ((beta[process == 'LD/HT'] + beta[process == 'HD/HT'])-(beta[process == 'HD/LT'] + beta[process == 'LD/LT']))/2,
+        distraction = ((beta[process == 'LD/HT'] + beta[process == 'LD/LT'])-(beta[process == 'HD/HT'] + beta[process == 'HD/LT']))/2,
+            .groups = "drop") %>%
+      ungroup()
+
+
+
+  derivedstuff<-melt(contrasts_df, id.vars=c("subjid", "side","layer","layeridx"),
+        variable.name="process",
+      value.name="beta")
+
+  for (myside in mylist$side){
+    cat(paste(rep("-", 50), collapse = ""), "\n")
+    msg <- sprintf("The %s region and %s side", myroi, myside)
+    print(msg)
+
+    moddata<-subset(derivedstuff, subjid %in% inclsubj$elhid & side %in% myside)
+
+    moddata['layeridx_scaled'] <- scale(moddata$layeridx)
+    # print(head(moddata))
+
+    model_noint<-lmer(beta~process+layeridx_scaled+(1|subjid),data=moddata)
+
+    model_linear<-lmer(beta~process*layeridx_scaled+(1|subjid),data=moddata)
+
+
+
+    model_quadratic<-lmer(beta~process*(layeridx_scaled+I(layeridx_scaled^2))+(1|subjid),data=moddata)
+
+    modell_third<-lmer(beta~process*(layeridx_scaled+I(layeridx_scaled^2)+I(layeridx_scaled^3))+(1|subjid),data=moddata)
+
+
+    # print(anova(model_noint,model_linear,model_quadratic))
+    model_quadratic_noint<-lmer(beta~process+(layeridx_scaled+I(layeridx_scaled^2))+(1|subjid),data=moddata)
+    model_quadratic<-lmer(beta~process*(layeridx_scaled+I(layeridx_scaled^2))+(1|subjid),data=moddata)
+    print(anova(model_linear,model_quadratic))
+
+  }
+
+}
+
+compute_auc <- function(betanull,beta_linear, beta_quadratic) {
+  quadratic_function <- function(x) {
+    # print(betanull)
+    betanull+(beta_linear * x) + (beta_quadratic * x^2)
+  }
+  # print(x_min)
+  x_min <-  -1.646822  # Lower bound of layeridx_scaled
+  x_max <-  1.646822  # Upper bound of layeridx_scaled
+
+  result <- integrate(quadratic_function, lower = x_min, upper = x_max)
+  return(result$value)
+}
+
+
+behaviorcorrelation<-function(datatomylaminarimaging,
+                              varXnm='',
+                              varYnm='',
+                              modeltyp="linear",
+                              includedsubj=includedsubj_n30,
+                              mylist=list(roi=c('S1','S2','pIns'),
+                                           side=c('left','right')),
+                              myoutputpath="") {
+
+    #put here a hint about the possible variables from which one can select for the correlation)
+
+      for (myroi in mylist$roi) {
+        roispeficdataset<-data.frame()
+        for (myside in mylist$side){
+
+          msg <- sprintf("The %s region and %s side", myroi, myside)
+          print(msg)
+
+          mylongdata<-loaddata(myroi,pathtolayerdata=datatomylaminarimaging)
+
+          contrasts_df <- mylongdata %>%
+              mutate(process = as.character(process)) %>%
+              group_by(subjid, side,layer, layeridx) %>%
+              summarise(
+                nociception = ((beta[process == 'HD/HT'] + beta[process == 'LD/HT'])-(beta[process == 'HD/LT'] + beta[process == 'LD/LT']))/2,
+                attention = ((beta[process == 'LD/HT'] + beta[process == 'LD/LT'])-(beta[process == 'HD/HT'] + beta[process == 'HD/LT']))/2,
+                    .groups = "drop") %>%
+              ungroup()
+
+          derivedstuff<-melt(contrasts_df, id.vars=c("subjid", "side","layer","layeridx"),
+              variable.name="process",
+            value.name="beta")
+
+          moddata<-subset(derivedstuff, subjid %in% includedsubj$elhid & side %in% myside)
+          moddata$layeridx_scaled <- scale(moddata$layeridx)
+
+          cat(sprintf("The number of participants for %s side: %d\n",
+                      myside,
+                      dplyr::n_distinct(moddata[moddata$side==myside,'subjid'])))
+
+
+          if (modeltyp == 'linear') {
+
+              mymodel<-lmer(beta~process*layeridx_scaled+(1+process:layeridx_scaled|subjid),data=moddata)
+
+              individrndslopes<-coef(mymodel)$subjid
+              individrndslopes$elhid<-rownames(individrndslopes)
+              individrndslopes <- individrndslopes %>%
+                rowwise() %>%
+                mutate(linear_TD= layeridx_scaled+`processattention:layeridx_scaled`) %>%
+                mutate(linear_BU=layeridx_scaled+`processnociception:layeridx_scaled`) %>%
+                mutate(lineardiff= `processattention:layeridx_scaled`-`processnociception:layeridx_scaled`) %>%
+                ungroup()
+
+              selectedcolumns<-c('effofcogntask','effoftemperature','side','perc_correct_diff',
+                                         'lineardiff','linear_TD','linear_BU')
+
+          } else if (modeltyp == 'quadratic') {
+
+            mymodel<-lmer(beta~process*(layeridx_scaled+I(layeridx_scaled^2))+(1+process:(layeridx_scaled+I(layeridx_scaled^2))|subjid),data=moddata)
+
+            individrndslopes<-coef(mymodel)$subjid
+              individrndslopes$elhid<-rownames(individrndslopes)
+              individrndslopes <- individrndslopes %>%
+                rowwise() %>%
+                mutate(linear_TD= layeridx_scaled+`processattention:layeridx_scaled`) %>%
+                mutate(linear_BU=layeridx_scaled+`processnociception:layeridx_scaled`) %>%
+                mutate(lineardiff= `processattention:layeridx_scaled`-`processnociception:layeridx_scaled`) %>%
+                mutate(quadr_TD= I(layeridx_scaled^2)+`processattention:I(layeridx_scaled^2)`) %>%
+                mutate(quadr_BU=I(layeridx_scaled^2)+`processnociception:I(layeridx_scaled^2)`) %>%
+
+                mutate(quadrdiff =`processattention:I(layeridx_scaled^2)`-`processnociception:I(layeridx_scaled^2)`) %>%
+
+                mutate(AUC_TD = compute_auc(`(Intercept)`+processattention,
+                                            linear_TD,
+                                            quadr_TD)) %>%
+                mutate(AUC_BU = compute_auc(`(Intercept)`,
+                                            linear_BU,
+                                            quadr_BU)) %>%
+                mutate(AUC_diff = AUC_TD-AUC_BU) %>%
+                ungroup()
+
+              selectedcolumns<-c('AUC_diff','effofcogntask','effoftemperature','side',
+                                   'AUC_TD','AUC_BU',"(Intercept)",'lineardiff','quadrdiff')
+
+
+          } else {
+
+            print('Select correct modelling: linear or quadratic model of tha data!')
+
+          }
+          # options(contrasts = c("contr.sum","contr.poly"))
+
+          # this is to visualize the fitted values of the model:
+          # moddata$fitted<-fitted(mymodel)
+          #more details can be seen in the interimsummary_Januar25.Rmd in the modelling-layerasfactor cell. T
+
+
+          # options(contrasts = c("contr.treatment", "contr.poly"))
+
+
+            if (myside=="left"){
+              left_sidedroidata<-individrndslopes
+              left_sidedroidata$side<-factor("left",levels = c("left","right"))
+            } else if (myside=="right"){
+              right_sidedroidata<-individrndslopes
+              right_sidedroidata$side<-factor("right",levels = c("left","right"))
+            }
+        }
+
+            roispeficdataset<-rbind(left_sidedroidata,right_sidedroidata)
+            # print(head(roispeficdataset))
+            #load behavior data
+            behavdata<-behavioreffects()
+            mymergeddata<-merge(roispeficdataset,behavdata,by = "elhid")
+            # mymergeddata<-merge(mymergeddata,perc_diff,by = "elhid")
+
+            long_data <- mymergeddata[,selectedcolumns]
+            # print('The stat test p value report two-sided test!')
+            sideoftest="two.sided"
+            cat(sprintf("The stat test p value report %s test! \n", sideoftest))
+            p<-ggplot(long_data, aes(x = get(varXnm), y = get(varYnm))) +
+                geom_point(alpha = 0.6, color = "black",size=6) +
+                geom_smooth(method = "lm", color = "black") +  # Add linear trend
+                facet_wrap(~modelparams, scales = "free_x") +  # Separate plots for each predictor
+              geom_hline(yintercept = 0, color = "black", linetype = "dashed",linewidth = 0.5, alpha = 0.2) +  # Add vertical line at x=0
+              annotate("text", x = -Inf, y = 0, label = "0", color = "black", size = 8, hjust = 0) +
+                theme_minimal() +
+              theme(#axis.title = element_blank(),
+                    #axis.text = element_blank(),
+                    strip.text = element_text(size = 26),
+                    panel.grid.major = element_blank(),
+                    panel.grid.minor = element_blank(),
+                    panel.border = element_blank(),
+                    panel.background = element_blank())+
+              facet_wrap(.~side,scales = "free_x")+
+                stat_cor(alternative = sideoftest,method = "spearman",label.y = -5,size=12)+ #greater/less
+                labs(title = paste("Correlation between bevhavior and model parameters in the ", myroi),
+                     x = varXnm,
+                     y = varYnm)
+            # hm<-paste0(myroi,".png")
+            # outputflnm=file.path("C:/Users/lenov/Documents/layerfMRI/E_stats/images/taskfmri/laminarbrainactivitycorrelation/auc", hm)
+            # ggsave(outputflnm, width = 12, height = 6, dpi = 300)
+            # print(outputflnm)
+
+            if (myoutputpath != ""){
+              outputflnm=file.path(myoutputpath,paste0(myroi, "_correlationwithbehav.png"))
+            # print(outputflnm)
+             ggsave(outputflnm,p, width = 14, height = 6, dpi = 300)
+              message("Image saved to: ", outputflnm)
+            } else {
+              # No path specified, return a message
+              print("No save path provided. Image not saved.")
+            }
+
+            print(p)
+
+}
+}
+
+
+```
+
+### S1_layeractivation {.tabset}
+
+#### Plots-S1_layeractivation (layers=20)
+
+```{r figure-laminarprofileS1_maineffvertices,fig.width=10,fig.height=6,echo=FALSE}
+
+mylist<-list(roi=c('S1')) #,'S2','pIns'
+inputpath="/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/percondition/"
+myoutputpath<-""
+
+for (myroi in mylist$roi) {
+  print(myroi)
+  mylongdata<-loaddata(myroi,pathtolayerdata = inputpath)
+  visdata<-subset(mylongdata, subjid %in% includedsubj_n30$elhid)
+  
+  dataonfigure<-visualize_botheffect_perlayer(visdata,myoutputpath) #myoutputpath
+  perconditionvis(mylongdata,myroi,myoutputpath)
+
+}
+```
+
+#### Stats-S1_layeractivation (layers=20)
+
+```{r stat-modelfitS1,echo=FALSE}
+mylist<-list(roi=c('S1'))#,'S2','pIns'))
+thedatawhatweworkwith = "/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/percondition/"
+modelestimateoutput = ""
+for (theroi in mylist$roi) {
+  #
+  maki<-modelfitting_2way(theroi,
+                    modeltype = 'continousec', #'factor','continouslin','continousec'
+                    contrasttype = 'maineff', #,'maineff', nociception
+                    mydata = thedatawhatweworkwith,
+                    inclsubj=includedsubj_n30,
+                    myoutputpath = modelestimateoutput)
+
+}
+```
+
+### S2_layeractivation {.tabset}
+#### Plots-S2 (layers=20)
+```{r figure-laminarprofileS2,fig.width=10,fig.height=6,echo=FALSE}
+
+mylist<-list(roi=c('S2')) #,'S2','pIns'
+inputpath="/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/percondition/"
+myoutputpath<-""
+
+for (myroi in mylist$roi) {
+  print(myroi)
+  mylongdata<-loaddata(myroi,pathtolayerdata = inputpath)
+  visdata<-subset(mylongdata, subjid %in% includedsubj_n30$elhid)
+  
+  dataonfigure<-visualize_botheffect_perlayer(visdata,myoutputpath) #myoutputpath
+  perconditionvis(mylongdata,myroi,myoutputpath)
+
+}
+```
+
+#### Stats-S2 (layers=20)
+
+```{r stat-modelfitS2}
+mylist<-list(roi=c('S2'))#,'S2','pIns'))
+thedatawhatweworkwith = "/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/percondition/"
+modelestimateoutput = ""
+for (theroi in mylist$roi) {
+  #
+  maki<-modelfitting_2way(theroi,
+                    modeltype = 'continousec', #'factor','continouslin','continousec'
+                    contrasttype = 'maineff', #,'maineff', nociception
+                    mydata = thedatawhatweworkwith,
+                    inclsubj=includedsubj_n30,
+                    myoutputpath = modelestimateoutput)
+
+}
+```
+### pIns_layerctivation {.tabset}
+#### Plots-pIns (layers=20)
+```{r figure-laminarprofilepIns,fig.width=10,fig.height=6,echo=FALSE}
+
+mylist<-list(roi=c('pIns')) #,'S2','pIns'
+inputpath="/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/percondition/"
+myoutputpath<-""
+
+for (myroi in mylist$roi) {
+  print(myroi)
+  mylongdata<-loaddata(myroi,pathtolayerdata = inputpath)
+  visdata<-subset(mylongdata, subjid %in% includedsubj_n30$elhid)
+  
+  dataonfigure<-visualize_botheffect_perlayer(visdata,myoutputpath) #myoutputpath
+  perconditionvis(mylongdata,myroi,myoutputpath)
+
+}
+```
+
+#### Stats-pIns (layers=20)
+
+```{r stat-modelfitpIns}
+mylist<-list(roi=c('pIns'))#,'S2','pIns'))
+thedatawhatweworkwith = "/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/percondition/"
+modelestimateoutput = ""
+for (theroi in mylist$roi) {
+  #
+  maki<-modelfitting_2way(theroi,
+                    modeltype = 'continousec', #'factor','continouslin','continousec'
+                    contrasttype = 'maineff', #,'maineff', nociception
+                    mydata = thedatawhatweworkwith,
+                    inclsubj=includedsubj_n30,
+                    myoutputpath = modelestimateoutput)
+
+}
+```
+### Compare model fit (quadratic VS linear)
+```{r comparequadraticmodels}
+
+
+mylist<-list(roi=c('S1','S2','pIns'))
+
+thedatawhatweworkwith = "/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/percondition"
+modelestimateoutput <- ""
+for (theroi in mylist$roi) {
+
+  modelfitting_comparison(theroi,
+                    mydata = thedatawhatweworkwith,
+                    inclsubj=includedsubj_n30,
+                    myoutputpath = modelestimateoutput)
+
+}
+```
+
+---
+
+
+## Random slope contrast correlation with behavior and imaging data {#correlation .tibble}
+
+### Plot-allregion_correlation
+
+```{r figure-behavcorrelation,fig.width=11,fig.height=7}
+inputpath="/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/percondition"
+
+outputpathhere=""
+behaviorcorrelation(datatomylaminarimaging = inputpath,
+                    modeltyp = 'quadratic', #quadratic
+                    varXnm = 'AUC_diff', #'lineardiff','linear_TD','linear_BU' , 'AUC_diff'
+                    varYnm = 'effofcogntask', #it can be other behavior variable such as 'effofcogntask','effoftemperature','side','perc_correct_diff',
+                    myoutputpath=outputpathhere) 
+
+```
+
+
+## Sensitivity analysis of ROI definition {#supplanalys}
+
+The above specified pipeline was *a-priori* defined, each decision point was set and rationalised theoretically before looking in the reported laminar profile. However, as the laminar profile in the context of pain was not previously investigated we might not have the best choices along the pipeline. Therefore, we provide here some additional exploration of different choices of the steps in the analysis. **The main conclusion is that, the results seem to be robust, and do not depend on our choice.**
+
+The core of the pipeline is here, below the lists details the alteration from this (hint: the **bold** parts are changed in the sensitivity analysis below).
+
+The following steps were investigated from the below detailed analytical pipeline, and in each step the original, above reported analytical decision is in bold. The **group level** effects of cognitive demand and temperature was entered in a conjunction analysis, and vertex-pairs showing **the highest effect(top200 vertex pairs)** **of this main effect conjunction (cognitive demand AND temperature)** **in the deeper depth of the cortex (75% of the cortex from WM/GM surface towards the pial surface)** was selected for further layer level analysis.
+
+The rationale was to minimize superficial bias (deeper 75% for vertex pair selection) and select individually a decent number of vertices from the ROI, which was defined based on anatomical and group level activation (calculated from smoothed data, therefore superficial bias has been present to a certain amount).
+
+1. The number of included vertex pairs/"columns" \@ref(allpositivevertices):
+  - **Top 200 vertex pairs (original)**
+  - All POSITIVE vertex pairs
+  - Individual smoothed mask
+
+
+### The number of included vertex pairs {#allpositivevertices}
+
+Part of the group level activation cluster (+anatomical restriction) was selected based on different criteria on the stat of the main effect conjunction contrasts. Originally, the top200 vertex pairs was selected, but it might be tricky as the max selection can lead weird behavior.
+
+- **All POSITIVE vertices** of the group level mask: using the POSITIVE contrast estimate (based on t-stat) from the group level mask. The reversed U-shape profile can be observed and the superficial shift seems to be very similar visually and statistically to the top200 selection.
+
+- **Indiviudal level smoothed masks** : GLM and corresponding conjunction analysis was performed on the individual, smoothed images (in the preprocessing step), which were used with a threshold of 1 to select the most active vertices of each indiviudal. Note that this selection is prone to superficial bias, and signal outside the ROI.
+
+
+
+
+#### maineffvertices_allPOSvertices (layers=20) {.tabset}
+
+##### Plot of all ROI with vertices showing the effect (positive vertices)
+```{r figure-laminarprofile_maineffvertices_allposvertices,fig.width=10,fig.height=6,echo=FALSE}
+
+mylist<-list(roi=c('S1','S2','pIns')) #'S1','S2','pIns'
+inputpath="/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/positivevertices_percondition/"
+myoutputpath <- ""
+for (myroi in mylist$roi) {
+  print(myroi)
+  mylongdata<-loaddata(myroi,pathtolayerdata = inputpath)
+  visdata<-subset(mylongdata, subjid %in% includedsubj_n30$elhid)
+  perconditionvis(visdata,myroi,myoutputpath)
+  dataonfigure<-visualize_botheffect_perlayer(visdata,myoutputpath) #myoutputpath
+}
+```
+
+##### Stat of all ROI with vertices showing the effect (positive vertices)
+```{r stat-laminarprofile_maineffvertices_allposvertices_2way}
+
+mylist<-list(roi=c('S1','S2','pIns'))#,'S2','pIns'))
+
+thedatawhatweworkwith = "/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/positivevertices_percondition/"
+modelestimateoutput<-""
+for (theroi in mylist$roi) {
+  
+  maki<-modelfitting_2way(theroi,
+                    modeltype = 'continousec', #'factor','continouslin','continousec'
+                    contrasttype = 'maineff', #,'maineff', nociception
+                    mydata = thedatawhatweworkwith,
+                    inclsubj=includedsubj_n30,
+                    myoutputpath = modelestimateoutput)
+
+}
+
+```
+##### Correlation with behavior in all ROI with vertices showing the effect (positive vertices)
+```{r stat_CORRELATION_maineffvertices_allposvertices,fig.width=11,fig.height=7}
+inputpath="/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/positivevertices_percondition/"
+outputpathhere=""
+behaviorcorrelation(datatomylaminarimaging = inputpath,
+                    modeltyp = 'quadratic', #quadratic
+                    varXnm = 'AUC_diff', #'lineardiff','linear_TD','linear_BU' , 'AUC_diff'
+                    varYnm = 'effofcogntask',
+                    myoutputpath=outputpathhere) #it can be other behavior variable such as 'effofcogntask','effoftemperature','side','perc_correct_diff',
+```
+
+
+
+#### Maineffvertices_smoothedindiviudaldata (layers=20) {.tabset}
+##### Plot of all ROI with vertices derived from indiviudal smoothed images (smoothed)
+```{r figure-laminarprofile_maineffvertices_smoothedindividual,fig.width=10,fig.height=6,echo=FALSE}
+
+
+mylist<-list(roi=c('S1','S2','pIns')) #'S1','S2','pIns'
+inputpath="/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/smoothedindividual_thr1_percondition/"
+myoutputpath<-""
+for (myroi in mylist$roi) {
+  print(myroi)
+  mylongdata<-loaddata(myroi,pathtolayerdata = inputpath)
+  visdata<-subset(mylongdata, subjid %in% includedsubj_n30$elhid)
+  # cat(sprintf("The number of participants for left side: %d\n", dplyr::n_distinct(visdata[visdata$side=='left','subjid'])))
+  # cat(sprintf("The number of participants for right side: %d\n", dplyr::n_distinct(visdata[visdata$side=='right','subjid'])))
+  perconditionvis(visdata,myroi,myoutputpath)
+  dataonfigure<-visualize_botheffect_perlayer(visdata,myoutputpath) #myoutputpath
+}
+```
+
+##### Stat of all ROI with vertices derived from indiviudal smoothed images (smoothed)
+```{r individual_smoothedmask_stat}
+
+
+mylist<-list(roi=c('S1','S2','pIns'))#,'S2','pIns'))
+thedatawhatweworkwith = "/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/smoothedindividual_thr1_percondition/"
+modelestimateoutput<-""
+
+for (theroi in mylist$roi) {
+  modelfitting_2way(theroi,
+                    modeltype = 'continousec', #'factor','continouslin','continousec'
+                    contrasttype = 'maineff', #,'maineff', nociception
+                    mydata = thedatawhatweworkwith,
+                    inclsubj=includedsubj_n30,
+                    myoutputpath = modelestimateoutput)
+  
+}
+```
+
+##### Model comparison of all ROI with vertices derived from indiviudal smoothed images (smoothed)
+```{r individual_smoothedmask_modelcomparison}
+
+mylist<-list(roi=c('S1','S2','pIns'))#,'S2','pIns'))
+thedatawhatweworkwith = "/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/smoothedindividual_thr1_percondition/"
+modelestimateoutput<-""
+for (theroi in mylist$roi) {
+
+  modelfitting_comparison(theroi,
+                    mydata = thedatawhatweworkwith,
+                    inclsubj=includedsubj_n30,
+                    myoutputpath = modelestimateoutput)
+
+}
+```
+
+##### Correlation with behavior in all ROI with vertices derived from indiviudal smoothed images (smoothed)
+
+```{r stat_CORRELATION_individualsmoothedmaskallvertices,fig.width=11,fig.height=7}
+inputpath="/Users/bala/Data/project-layerpain/groupavg_correctBET/layerdata/smoothedindividual_thr1_percondition/"
+outputpathhere=""
+behaviorcorrelation(datatomylaminarimaging = inputpath,
+                    modeltyp = 'quadratic', #quadratic
+                    varXnm = 'AUC_diff', #'lineardiff','linear_TD','linear_BU' , 'AUC_diff'
+                    varYnm = 'effofcogntask',
+                    myoutputpath=outputpathhere) #it can be other behavior variable such as 'effofcogntask','effoftemperature','side','perc_correct_diff',
+
+```
+
+
+### tSNR
+
+The temporal SNR laminar dependency for each condition and ROI separately:
+
+```{r tSNR_figures,fig.width=10,fig.height=6}
+
+tsnrfilpath <- '/Users/bala/Documents/layerfMRI/E_stats/images/tomanuscipt/firstdrafts/supplementary/tSNRBOLD_percondition/tSNRdatafornicervisualization'
+
+tsnrdatafilepath<-file.path(tsnrfilpath,dir(tsnrfilpath))
+tsnrdatafilepath
+alltsnr_data<-c()
+  # # layerdatafilepath<-file.path(pathtolayerdata,p[grepl(roi,dir(pathtolayerdata))])
+  # print(paste('the file what we work with:',layerdatafilepath))
+for (myfiles in tsnrdatafilepath) {
+  tsnr_data<-read.csv2(myfiles,sep = ",",dec = ".",header = TRUE)
+  tsnr_data$roi<-sub("_trialtSNR.csv$", "", basename(myfiles))
+  tsnr_data$hemisphere<-factor(tsnr_data$hemisphere)
+  alltsnr_data<-rbind(alltsnr_data,tsnr_data)
+
+}
+
+
+alltsnr_data_long <- alltsnr_data %>%
+  pivot_longer(cols = -c(subjid,hemisphere,layer,roi), names_to = "conditions", values_to = "tSNR")
+
+alltsnr_data_long$conditions<-factor(alltsnr_data_long$conditions,levels = c("pain_low_cogn_high_pain",
+                                                                             "pain_high_cogn_high_pain",
+                                                                             "pain_low_cogn_low_pain",
+                                                                             "pain_high_cogn_low_pain"))
+
+alltsnr_data_long <- mutate(alltsnr_data_long,conditions = fct_recode(conditions,
+                                                                      "HD/HT"="pain_high_cogn_high_pain",
+                                                                      "HD/LT"="pain_high_cogn_low_pain",
+                                                                      "LD/HT"="pain_low_cogn_high_pain",
+                                                                      "LD/LT"="pain_low_cogn_low_pain"))
+alltsnr_data_long$roi <- factor(alltsnr_data_long$roi, levels = c("S1","S2","pIns"))
+alltsnr_data_long <- mutate(alltsnr_data_long,hemisphere = fct_recode(hemisphere,
+                                                                      "left"="1",
+                                                                      "right"="2"))
+alltsnr_data_long$hemisphere <- factor(alltsnr_data_long$hemisphere, levels = c("left","right"))
+
+tsnrdata_forfig <- alltsnr_data_long %>%
+    group_by(hemisphere,layer,roi,conditions) %>%
+    summarise(
+      N = n(),
+      avtsnr = mean(tSNR, na.rm = TRUE),  # Compute mean of adjusted values
+      sd = sd(tSNR, na.rm = TRUE),  # Compute SD of adjusted values
+      sem = (sd / sqrt(N)),
+      .groups = "drop"
+    )
+
+
+ptsnr<-ggplot(tsnrdata_forfig,aes(layer,avtsnr,colour=conditions,group = conditions))+
+  geom_point(position = position_jitterdodge(),alpha = 0.3,size=.6)+
+  geom_line()+
+  geom_errorbar(aes(ymin=avtsnr-sd, ymax=avtsnr+sd),linewidth = 0.2, width=.1,
+                   position=position_dodge(.9))+
+  scale_color_manual(values=c('orangered4',
+                               'orangered1',
+                               'royalblue4',
+                               'skyblue1'),name="Conditions")+
+  scale_y_continuous(
+          breaks = c(100)  # Only show the tick at 0 on the y-axis
+        )+
+  ylim(30,120)+
+      theme_minimal()+
+        theme(axis.text = element_text(size=22),
+              axis.title = element_text(size = 20),
+              axis.text.x = element_blank(),   # Remove x-axis text axis.text.x = element_text(angle = 30, vjust = 0.5, hjust=1),
+
+              strip.text = element_text(size = 26),
+              legend.text = element_text(size = 22),
+              legend.title = element_text(size = 16),
+              legend.position = "bottom",
+            plot.background = element_rect(fill = "white", color = NA),  # Set plot background to white
+              panel.background = element_rect(fill = "white", color = NA))+
+  labs(x="Cortical depth",y="tSNR [a.u.]")+
+  facet_grid(roi~hemisphere)
+print(ptsnr)
+
+
+```
+
+
+
