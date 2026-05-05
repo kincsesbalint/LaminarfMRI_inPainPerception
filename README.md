@@ -1,10 +1,10 @@
 <br />
 <div align="center">
-  <h3 align="center">Laminar fMRI of the perception of pain</h3>
+  <h3 align="center">Laminar fMRI reveals layer‑specific dissociation of sensory and cognitive influences on pain processing </h3>
 
-  <p align="center">
-    Repository containing all the scripts used to process and analyze laminar fMRI data of pain perception.
-  </p>
+  <img src="/logo/grouplvlmaineffects_distraction.png" alt="Group-level main effects" width="900">
+
+
 </div>
 
 
@@ -30,6 +30,10 @@ This repository contains a full processing pipeline for the Layer-fMRI pain proj
 - `stats/`: dedicated scripts for downstream layer/statistical testing from modeled outputs.
 - `statistical_analysis/`: additional statistical notebooks/scripts for extended analyses.
 - `data/`: structured outputs and metadata that support reproducibility and visualization.
+
+## Disclaimer
+
+The code in this repository is not yet organized in its final user-friendly form. However, the full pipeline has been tested for reproducibility multiple times and works reliably. A cleaner and more user-friendly project structure will follow in a future update.
 
 
 
